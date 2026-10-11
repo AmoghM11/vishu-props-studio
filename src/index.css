@@ -9,9 +9,9 @@
     font-size: 1rem;
     line-height: 1.6;
   }
-  ::selection { background: #2F6485; color: #FCFAF5; }
+  ::selection { background: #B9DDF2; color: #1D2B38; }
   h1, h2, h3, h4 { @apply font-display text-ink; }
-  :focus-visible { outline: 2px solid #2F6485; outline-offset: 3px; border-radius: 6px; }
+  :focus-visible { outline: 2px solid #2F739C; outline-offset: 3px; border-radius: 6px; }
   img { -webkit-user-drag: none; }
 }
 
@@ -45,7 +45,7 @@
     transition: transform 160ms cubic-bezier(.2,.8,.2,1), background-color 200ms ease, box-shadow 200ms ease, color 200ms ease;
   }
   .btn:active { transform: scale(0.97); transition-duration: 80ms; }
-  .btn-primary { @apply bg-ice text-ivory shadow-lift hover:bg-ice-dark; }
+  .btn-primary { @apply bg-ice-light text-ink shadow-soft hover:bg-ice-hover; }
   .btn-ghost { @apply border border-line bg-white/70 text-ink hover:border-ice/40 hover:bg-white; }
 
   .magnetic-btn { will-change: transform; }
@@ -54,8 +54,8 @@
 
   .grid-bg {
     background-image:
-      linear-gradient(rgba(47,100,133,.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(47,100,133,.06) 1px, transparent 1px);
+      linear-gradient(rgba(47,115,156,.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(47,115,156,.07) 1px, transparent 1px);
     background-size: 44px 44px;
     mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
   }
@@ -64,7 +64,7 @@
     @apply w-full min-h-[48px] rounded-2xl border border-line bg-ivory px-4 py-3 text-base text-ink placeholder:text-muted/60;
     transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
   }
-  .field:focus { @apply border-ice bg-white outline-none; box-shadow: 0 0 0 4px rgba(47,100,133,.12); }
+  .field:focus { @apply border-ice bg-white outline-none; box-shadow: 0 0 0 4px rgba(159,205,234,.45); }
 }
 
 /* ── Signature: stars falling onto the moon cradle ───────────────── */

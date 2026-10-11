@@ -171,10 +171,10 @@ function SectionHead({ label, title, flourish, text, center = false }) {
 function Logo({ light = false }) {
   return (
     <a href="#top" className="group flex items-center gap-2.5" aria-label="Vishu Props Studio — home">
-      <span className="relative grid h-10 w-10 place-items-center rounded-2xl bg-ice text-white shadow-soft">
+      <span className="relative grid h-10 w-10 place-items-center rounded-2xl bg-ice-light text-white shadow-soft">
         <svg viewBox="0 0 32 32" className="h-6 w-6" aria-hidden="true">
           <path d="M20 6a11 11 0 1 0 6 19.6A9 9 0 0 1 20 6z" fill="currentColor" />
-          <path d="M23 8l.9 2.1 2.1.9-2.1.9L23 14l-.9-2.1-2.1-.9 2.1-.9z" fill="#CDE4F2" />
+          <path d="M23 8l.9 2.1 2.1.9-2.1.9L23 14l-.9-2.1-2.1-.9 2.1-.9z" fill="#2F739C" />
         </svg>
       </span>
       <span className="leading-none">
@@ -328,7 +328,7 @@ function Hero() {
     <section
       id="top"
       ref={root}
-      className="relative flex min-h-[100svh] items-end overflow-hidden bg-ink pb-24 pt-32 sm:items-center sm:pb-28"
+      className="relative flex min-h-[100svh] items-end overflow-hidden bg-[#18354D] pb-24 pt-32 sm:items-center sm:pb-28"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
       aria-roledescription="carousel"
@@ -357,8 +357,8 @@ function Hero() {
         ))}
       </div>
       {/* legibility washes: deep ice-navy from the left, soft cream fade into the page below */}
-      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#0F1C27]/85 via-[#0F1C27]/45 to-[#0F1C27]/25 sm:bg-gradient-to-r sm:from-[#0F1C27]/80 sm:via-[#0F1C27]/45 sm:to-transparent" />
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0F1C27]/50 to-transparent" />
+      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#18354D]/85 via-[#18354D]/45 to-[#18354D]/25 sm:bg-gradient-to-r sm:from-[#18354D]/80 sm:via-[#18354D]/45 sm:to-transparent" />
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#18354D]/50 to-transparent" />
 
       {/* floating sparkles, top-right */}
       <div aria-hidden="true" className="pointer-events-none absolute right-6 top-28 hidden h-40 w-56 sm:block">
@@ -373,7 +373,7 @@ function Hero() {
             <span className="status-dot h-2 w-2 rounded-full bg-[#4ade80]" /> Maternity · Newborn · Toddler · Family
           </p>
           <h1 className="h-anim display-xl mt-6 !text-white" style={{ textShadow: '0 2px 30px rgba(15,28,39,.35)' }}>
-            Little moments,<br /><span className="font-serif font-medium italic text-ice-mist">styled to last.</span>
+            Little moments,<br /><span className="font-serif font-medium italic text-ice-light">styled to last.</span>
           </h1>
           <p className="h-anim mt-6 max-w-xl text-lg leading-relaxed text-white/85 sm:text-xl">
             An exclusive Bangalore studio with 150+ themes across 2,500 sq ft, and costumes for every set. One place for maternity, newborn, toddler and family shoots.
@@ -478,7 +478,7 @@ function StudioVideo() {
   }
 
   return (
-    <div ref={wrap} className="relative mt-12 overflow-hidden rounded-4xl bg-ink shadow-lift" data-reveal>
+    <div ref={wrap} className="relative mt-12 overflow-hidden rounded-4xl bg-ice-mist shadow-lift" data-reveal>
       <video
         ref={video}
         className="aspect-video w-full object-cover"
@@ -492,15 +492,15 @@ function StudioVideo() {
         onPause={() => setPlaying(false)}
         aria-label="Video tour of the Vishu Props Studio sets"
       />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#0F1C27]/75 to-transparent" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#18354D]/75 to-transparent" />
       {!playing && (
-        <button type="button" onClick={toggle} className="absolute left-1/2 top-1/2 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-ice shadow-lift transition-transform hover:scale-105 active:scale-95" aria-label="Play studio tour">
+        <button type="button" onClick={toggle} className="absolute left-1/2 top-1/2 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-ice-light text-ink shadow-lift transition-transform hover:scale-105 active:scale-95" aria-label="Play studio tour">
           <Play className="ml-1 h-8 w-8" fill="currentColor" />
         </button>
       )}
       <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-8">
         <div className="text-white">
-          <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-ice-mist">Studio tour · 1 min</p>
+          <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-ice-light">Studio tour · 1 min</p>
           <p className="mt-1.5 font-display text-xl font-bold tracking-tight sm:text-3xl">Step inside Vishu Props Studio</p>
         </div>
         <div className="flex shrink-0 gap-2">
@@ -578,7 +578,7 @@ function MoonCradle() {
       </div>
       <h3 className="mt-5 text-xl font-bold tracking-tight">Gentle with the littlest ones</h3>
       <p className="mt-2 text-[0.95rem] text-muted">Patient photographers, a homely studio and babies handled with great care and love.</p>
-      <div className="relative mt-6 h-64 overflow-hidden rounded-3xl bg-gradient-to-b from-[#1C3247] via-[#34607F] to-[#A9CFE6]" aria-hidden="true">
+      <div className="relative mt-6 h-64 overflow-hidden rounded-3xl bg-gradient-to-b from-[#3F7FA8] via-[#7DB6DB] to-[#D6ECF8]" aria-hidden="true">
         {[[12, 18], [80, 26], [22, 54], [88, 60], [70, 14], [50, 36]].map(([x, y], i) => (
           <span key={i} className="twinkle absolute h-1 w-1 rounded-full bg-white" style={{ left: `${x}%`, top: `${y}%`, '--delay': `${i * 0.5}s` }} />
         ))}
@@ -618,7 +618,7 @@ function SlotScheduler() {
         .to('.cursor', { opacity: 1, duration: 0.3 })
         .to('.cursor', { x: () => root.current.querySelector('.day-5').offsetLeft + 14, y: () => root.current.querySelector('.day-5').offsetTop + 14, duration: 1, ease: 'power2.inOut' })
         .to('.cursor', { scale: 0.85, duration: 0.1, yoyo: true, repeat: 1 })
-        .to('.day-5', { backgroundColor: '#2F6485', color: '#FCFAF5', duration: 0.2 }, '<')
+        .to('.day-5', { backgroundColor: '#B9DDF2', color: '#1D2B38', duration: 0.2 }, '<')
         .to('.cursor', { x: () => root.current.querySelector('.slot-btn').offsetLeft + 40, y: () => root.current.querySelector('.slot-btn').offsetTop + 16, duration: 0.8, ease: 'power2.inOut' }, '+=0.3')
         .to('.cursor', { scale: 0.85, duration: 0.1, yoyo: true, repeat: 1 })
         .to('.slot-btn', { backgroundColor: '#228b54', color: '#fff', duration: 0.2 }, '<')
@@ -1011,7 +1011,7 @@ function MoreServices() {
                 <img src={img(s.img, 'thumb')} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]" />
               </div>
               <div className="flex flex-1 flex-col p-6">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-ice-soft text-ice transition-colors group-hover:bg-ice group-hover:text-white"><s.icon className="h-5 w-5" /></span>
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-ice-soft text-ice transition-colors group-hover:bg-ice-light group-hover:text-ink"><s.icon className="h-5 w-5" /></span>
                 <h3 className="mt-4 text-lg font-bold tracking-tight">{s.title}</h3>
                 <p className="mt-2 text-[0.95rem] leading-relaxed text-muted">{s.text}</p>
               </div>
@@ -1127,7 +1127,7 @@ function Lightbox({ items, index, onClose, onIndex, title }) {
   if (!item) return null
   const cat = title || CATS.find((c) => c.key === item.cat)?.label
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#0E1820]/95 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Photo viewer">
+    <div className="fixed inset-0 z-[100] flex flex-col bg-[#14222E]/95 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Photo viewer">
       <div className="flex items-center justify-between p-3 text-white sm:p-5">
         <p className="font-mono text-xs uppercase tracking-widest text-white/75">{cat} · <span className="text-white">{index + 1}</span> / {items.length}</p>
         <button ref={closeRef} type="button" onClick={onClose} className="grid h-11 w-11 place-items-center rounded-full bg-white/10 hover:bg-white/20" aria-label="Close viewer"><X className="h-5 w-5" /></button>
@@ -1160,7 +1160,7 @@ function Lightbox({ items, index, onClose, onIndex, title }) {
             onClick={() => onIndex(i)}
             aria-label={`Show photo ${i + 1}`}
             aria-current={i === index}
-            className={`h-14 w-14 shrink-0 overflow-hidden rounded-lg transition-all duration-200 sm:h-16 sm:w-16 ${i === index ? 'opacity-100 ring-2 ring-ice-mist ring-offset-2 ring-offset-[#0E1820]' : 'opacity-45 hover:opacity-80'}`}
+            className={`h-14 w-14 shrink-0 overflow-hidden rounded-lg transition-all duration-200 sm:h-16 sm:w-16 ${i === index ? 'opacity-100 ring-2 ring-ice-light ring-offset-2 ring-offset-[#14222E]' : 'opacity-45 hover:opacity-80'}`}
           >
             <img src={`/img/thumb/${g.src}`} alt="" loading="lazy" className="h-full w-full object-cover" />
           </button>
@@ -1193,9 +1193,9 @@ function Gallery() {
               role="tab"
               aria-selected={cat === c.key}
               onClick={() => { setCat(c.key); setShown(PAGE) }}
-              className={`inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors ${cat === c.key ? 'border-ice bg-ice text-white' : 'border-line bg-ivory text-ink hover:border-ice/40'}`}
+              className={`inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors ${cat === c.key ? 'border-ice-glow bg-ice-light text-ink' : 'border-line bg-white text-ink hover:border-ice-glow hover:bg-ice-soft'}`}
             >
-              {c.label} <span className={`font-mono text-[0.7rem] ${cat === c.key ? 'text-white/75' : 'text-muted'}`}>{counts[c.key]}</span>
+              {c.label} <span className={`font-mono text-[0.7rem] ${cat === c.key ? 'text-ink/60' : 'text-muted'}`}>{counts[c.key]}</span>
             </button>
           ))}
         </div>
@@ -1476,33 +1476,33 @@ function ContactForm() {
 
 function Footer() {
   return (
-    <footer className="bg-ink text-ivory/80">
+    <footer className="border-t border-ice-mist bg-ice-soft text-ink/80">
       <div className="container-x grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <Logo light />
-          <p className="mt-5 max-w-xs text-sm leading-relaxed text-ivory/65">Studio with a variety of props & backdrops. Exclusive studio for maternity, newborn, toddler and first-year shoots in Bangalore. Est. 2025.</p>
+          <Logo />
+          <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted">Studio with a variety of props & backdrops. Exclusive studio for maternity, newborn, toddler and first-year shoots in Bangalore. Est. 2025.</p>
           <div className="mt-6 flex gap-2">
-            <a href={INSTAGRAM} target="_blank" rel="noreferrer" aria-label="Instagram" className="grid h-11 w-11 place-items-center rounded-full border border-ivory/15 hover:bg-ivory/10"><InstagramIcon className="h-5 w-5" /></a>
-            <a href={FACEBOOK} target="_blank" rel="noreferrer" aria-label="Facebook" className="grid h-11 w-11 place-items-center rounded-full border border-ivory/15 hover:bg-ivory/10"><FacebookIcon className="h-5 w-5" /></a>
-            <a href={WA_DEFAULT} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="grid h-11 w-11 place-items-center rounded-full border border-ivory/15 hover:bg-ivory/10"><WhatsAppIcon className="h-5 w-5" /></a>
+            <a href={INSTAGRAM} target="_blank" rel="noreferrer" aria-label="Instagram" className="grid h-11 w-11 place-items-center rounded-full border border-ice-mist bg-white text-ice hover:bg-ice-light hover:text-ink"><InstagramIcon className="h-5 w-5" /></a>
+            <a href={FACEBOOK} target="_blank" rel="noreferrer" aria-label="Facebook" className="grid h-11 w-11 place-items-center rounded-full border border-ice-mist bg-white text-ice hover:bg-ice-light hover:text-ink"><FacebookIcon className="h-5 w-5" /></a>
+            <a href={WA_DEFAULT} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="grid h-11 w-11 place-items-center rounded-full border border-ice-mist bg-white text-ice hover:bg-ice-light hover:text-ink"><WhatsAppIcon className="h-5 w-5" /></a>
           </div>
         </div>
         <div>
-          <p className="font-mono text-[0.68rem] uppercase tracking-widest text-gold">Shoots</p>
+          <p className="font-mono text-[0.68rem] uppercase tracking-widest text-ice">Shoots</p>
           <ul className="mt-4 space-y-2.5 text-sm">
-            {[['Maternity', 'maternity'], ['New Born', 'newborn'], ['Toddler shoot', 'toddler'], ['Family', 'family'], ['Studio rental', 'rental']].map(([s, k]) => <li key={s}><a href={`#svc-${k}`} className="hover:text-ivory">{s}</a></li>)}
+            {[['Maternity', 'maternity'], ['New Born', 'newborn'], ['Toddler shoot', 'toddler'], ['Family', 'family'], ['Studio rental', 'rental']].map(([s, k]) => <li key={s}><a href={`#svc-${k}`} className="hover:text-ice">{s}</a></li>)}
           </ul>
         </div>
         {STUDIOS.map((s) => (
           <div key={s.key}>
-            <p className="font-mono text-[0.68rem] uppercase tracking-widest text-gold">{s.name}</p>
-            <p className="mt-4 text-sm leading-relaxed text-ivory/65">{s.address}</p>
-            <a href={`tel:${PHONES[s.key].tel}`} className="mt-3 inline-block text-sm font-semibold text-ivory hover:text-gold">{PHONES[s.key].label}</a>
+            <p className="font-mono text-[0.68rem] uppercase tracking-widest text-ice">{s.name}</p>
+            <p className="mt-4 text-sm leading-relaxed text-muted">{s.address}</p>
+            <a href={`tel:${PHONES[s.key].tel}`} className="mt-3 inline-block text-sm font-semibold text-ink hover:text-ice">{PHONES[s.key].label}</a>
           </div>
         ))}
       </div>
-      <div className="border-t border-ivory/10">
-        <div className="container-x flex flex-col items-center justify-between gap-4 py-6 text-xs text-ivory/50 sm:flex-row">
+      <div className="border-t border-ice-mist bg-white/60">
+        <div className="container-x flex flex-col items-center justify-between gap-4 py-6 text-xs text-muted sm:flex-row">
           <p>© {new Date().getFullYear()} Vishu Props Studio, Bangalore. All rights reserved.</p>
           <p className="flex items-center gap-2"><span className="status-dot h-2 w-2 rounded-full bg-[#2fbf71]" /> Taking bookings · open until 8:30 pm</p>
         </div>
@@ -1532,7 +1532,7 @@ export default function App() {
 
   return (
     <>
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-full focus:bg-ice focus:px-5 focus:py-3 focus:text-ivory">Skip to content</a>
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-full focus:bg-ice-light focus:px-5 focus:py-3 focus:text-ink">Skip to content</a>
       <Navbar />
       <main id="main">
         <Hero />
