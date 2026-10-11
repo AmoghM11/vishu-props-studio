@@ -5,6 +5,7 @@ import {
   Menu, X, Star, Phone, MapPin, Clock, ArrowRight, ArrowUpRight, Baby, Heart, Users, Camera,
   Cake, Sparkles, Building2, Gift, ChevronLeft, ChevronRight, Shirt, CalendarCheck, Images,
   Wallet, Video, BookOpen, Palette, ShieldCheck, Upload, Check, Loader2, Navigation, Quote,
+  Play, Pause, Volume2, VolumeX,
 } from 'lucide-react'
 import GALLERY from './gallery.json'
 
@@ -24,8 +25,8 @@ const FACEBOOK = 'https://www.facebook.com/p/Vishu-Prop-Studio-61563375611543/'
 const WA_DEFAULT = `https://wa.me/${PHONES.vidyaranyapura.wa}?text=${encodeURIComponent('Hi Vishu Props Studio, I would like to book a photoshoot.')}`
 
 const NAV = [
-  { href: '#themes', label: 'Themes' },
-  { href: '#services', label: 'Shoots' },
+  { href: '#tour', label: 'Studio tour' },
+  { href: '#services', label: 'Services' },
   { href: '#gallery', label: 'Gallery' },
   { href: '#studios', label: 'Studios' },
   { href: '#reviews', label: 'Reviews' },
@@ -40,17 +41,6 @@ const THEMES = [
   { id: 65, name: 'Milk & Citrus Bath' },
   { id: 129, name: 'Pretty in Pink' },
   { id: 217, name: 'Peacock Nest' },
-]
-
-const SERVICES = [
-  { icon: Heart, title: 'Maternity Shoot', text: 'Solo and family maternity portraits in flowing gowns, sarees and styled sets — including the Ravi Varma theme.', img: 147, tag: 'Most loved' },
-  { icon: Baby, title: 'Newborn Shoot', text: 'Calm, unhurried sessions with wraps, nests and dreamy props — your baby handled with great care and love.', img: 169 },
-  { icon: Sparkles, title: 'Toddler & 1st Year', text: 'Milestone shoots for six months to the first birthday, with costumes provided for every theme.', img: 22 },
-  { icon: Cake, title: 'Pre-Birthday & Cake Smash', text: '“One”, “Two” and half-birthday setups with balloons, cakes and toys, ready before the party.', img: 154 },
-  { icon: Users, title: 'Family Portraits', text: 'Parents, grandparents and siblings together — from the royal throne set to the vintage window.', img: 168 },
-  { icon: Camera, title: 'Model & Fashion Shoot', text: 'Portfolio and fashion shoots using our backdrops, lighting and 2,500 sq ft of set space.', img: 87 },
-  { icon: Building2, title: 'Studio & Props Rental', text: 'Rent the studio space and props for your own shoot. 150+ themes ready to use.', img: 304 },
-  { icon: Gift, title: 'Event Coverage', text: 'Wedding, engagement and birthday photography with albums and videography.', img: 316 },
 ]
 
 const PRICES = [
@@ -99,6 +89,10 @@ const CATS = [
 ]
 
 /* ─────────────────────────── Small helpers ─────────────────────────── */
+
+let scrollLocks = 0
+function lockScroll() { if (scrollLocks++ === 0) document.body.style.overflow = 'hidden' }
+function unlockScroll() { if (--scrollLocks <= 0) { scrollLocks = 0; document.body.style.overflow = '' } }
 
 const prefersReduced = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -177,15 +171,15 @@ function SectionHead({ label, title, flourish, text, center = false }) {
 function Logo({ light = false }) {
   return (
     <a href="#top" className="group flex items-center gap-2.5" aria-label="Vishu Props Studio — home">
-      <span className="relative grid h-10 w-10 place-items-center rounded-2xl bg-plum text-gold-soft shadow-soft">
+      <span className="relative grid h-10 w-10 place-items-center rounded-2xl bg-ice text-white shadow-soft">
         <svg viewBox="0 0 32 32" className="h-6 w-6" aria-hidden="true">
           <path d="M20 6a11 11 0 1 0 6 19.6A9 9 0 0 1 20 6z" fill="currentColor" />
-          <path d="M23 8l.9 2.1 2.1.9-2.1.9L23 14l-.9-2.1-2.1-.9 2.1-.9z" fill="#B48A4E" />
+          <path d="M23 8l.9 2.1 2.1.9-2.1.9L23 14l-.9-2.1-2.1-.9 2.1-.9z" fill="#CDE4F2" />
         </svg>
       </span>
       <span className="leading-none">
-        <span className={`block font-display text-[1.05rem] font-bold tracking-tight ${light ? 'text-ivory' : 'text-ink'}`}>Vishu Props</span>
-        <span className={`mt-1 block font-mono text-[0.62rem] uppercase tracking-[0.28em] ${light ? 'text-gold-soft/80' : 'text-gold-deep'}`}>Studio · Bangalore</span>
+        <span className={`block font-display text-[1.05rem] font-bold tracking-tight transition-colors duration-300 ${light ? 'text-white' : 'text-ink'}`}>Vishu Props</span>
+        <span className={`mt-1 block font-mono text-[0.62rem] uppercase tracking-[0.28em] transition-colors duration-300 ${light ? 'text-white/75' : 'text-gold-deep'}`}>Studio · Bangalore</span>
       </span>
     </a>
   )
@@ -195,41 +189,49 @@ function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
+    const onScroll = () => setScrolled(window.scrollY > 40)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
+    if (!open) return
+    lockScroll()
     const onKey = (e) => e.key === 'Escape' && setOpen(false)
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    return () => { unlockScroll(); window.removeEventListener('keydown', onKey) }
   }, [open])
 
+  // Over the photo hero the bar is transparent with light text; it becomes frosted cream once scrolled
+  const onDark = !scrolled
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
       <nav
         aria-label="Primary"
         className={`mx-auto flex max-w-6xl items-center justify-between rounded-full py-2 pl-3 pr-2 transition-all duration-300 ${scrolled ? 'glass shadow-soft' : 'border border-transparent'}`}
       >
-        <Logo />
+        <Logo light={onDark} />
         <ul className="hidden items-center gap-1 lg:flex">
           {NAV.map((n) => (
             <li key={n.href}>
-              <a href={n.href} className="rounded-full px-4 py-2.5 text-[0.92rem] font-medium text-ink/80 transition-colors hover:bg-plum-soft hover:text-plum">{n.label}</a>
+              <a
+                href={n.href}
+                className={`rounded-full px-4 py-2.5 text-[0.92rem] font-medium transition-colors ${onDark ? 'text-white/90 hover:bg-white/15 hover:text-white' : 'text-ink/80 hover:bg-ice-soft hover:text-ice'}`}
+              >
+                {n.label}
+              </a>
             </li>
           ))}
         </ul>
         <div className="flex items-center gap-2">
-          <a href={`tel:${PHONES.vidyaranyapura.tel}`} className="hidden items-center gap-2 rounded-full px-3 py-2.5 text-sm font-medium text-ink/80 hover:text-plum md:inline-flex">
+          <a href={`tel:${PHONES.vidyaranyapura.tel}`} className={`hidden items-center gap-2 rounded-full px-3 py-2.5 text-sm font-medium md:inline-flex ${onDark ? 'text-white/90 hover:text-white' : 'text-ink/80 hover:text-ice'}`}>
             <Phone className="h-4 w-4" /> {PHONES.vidyaranyapura.label}
           </a>
-          <a href="#book" className="btn btn-primary hidden !min-h-[44px] !px-5 text-sm sm:inline-flex">Book a shoot</a>
+          <a href="#book" className={`btn hidden !min-h-[44px] !px-5 text-sm sm:inline-flex ${onDark ? 'bg-white text-ink shadow-soft hover:bg-ice-soft' : 'btn-primary'}`}>Book a shoot</a>
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="grid h-11 w-11 place-items-center rounded-full border border-line bg-white/80 lg:hidden"
+            className={`grid h-11 w-11 place-items-center rounded-full border lg:hidden ${onDark ? 'border-white/30 bg-white/10 text-white' : 'border-line bg-white/80 text-ink'}`}
             aria-label="Open menu"
             aria-expanded={open}
           >
@@ -256,8 +258,8 @@ function Navbar() {
           <ul className="mt-10 space-y-1">
             {NAV.map((n) => (
               <li key={n.href}>
-                <a onClick={() => setOpen(false)} href={n.href} className="flex items-center justify-between rounded-2xl px-4 py-4 font-display text-2xl font-semibold tracking-tight hover:bg-plum-soft">
-                  {n.label} <ArrowRight className="h-5 w-5 text-gold" />
+                <a onClick={() => setOpen(false)} href={n.href} className="flex items-center justify-between rounded-2xl px-4 py-4 font-display text-2xl font-semibold tracking-tight hover:bg-ice-soft">
+                  {n.label} <ArrowRight className="h-5 w-5 text-ice" />
                 </a>
               </li>
             ))}
@@ -272,96 +274,245 @@ function Navbar() {
   )
 }
 
-/* ─────────────────────────── 2 · Hero ─────────────────────────── */
+/* ─────────────────────────── 2 · Hero (full-bleed sliding background) ─────────────────────────── */
+
+const HERO_SLIDES = [
+  { id: 147, pos: '70% 45%', label: 'Maternity', alt: 'Expecting mother in a lime tulle gown in the boho bedroom set' },
+  { id: 196, pos: '78% 50%', label: 'Newborn', alt: 'Newborn asleep on a glowing crescent moon above the clouds' },
+  { id: 123, pos: '62% 45%', label: 'Maternity', alt: 'Expecting mother in a blush gown beneath a floral arch' },
+  { id: 75, pos: '68% 50%', label: 'First birthday', alt: 'Baby girl in a pink tutu on a first-birthday set' },
+  { id: 87, pos: '62% 40%', label: 'Maternity', alt: 'Mother in a red gown with a dramatic flowing trail' },
+  { id: 168, pos: '60% 45%', label: 'Family', alt: 'Family in traditional dress in the boho bedroom set' },
+  { id: 65, pos: '58% 50%', label: 'Baby', alt: 'Laughing baby in a milk bath with oranges and leaves' },
+]
+const SLIDE_MS = 6000
 
 function Hero() {
   const root = useRef(null)
+  const [idx, setIdx] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const reduced = useMemo(prefersReduced, [])
+  const n = HERO_SLIDES.length
+  const go = useCallback((d) => setIdx((i) => (i + d + n) % n), [n])
+
+  useEffect(() => {
+    if (paused) return
+    const t = setTimeout(() => go(1), SLIDE_MS)
+    return () => clearTimeout(t)
+  }, [idx, paused, go])
+  useEffect(() => { new Image().src = img(HERO_SLIDES[(idx + 1) % n].id) }, [idx, n])
+
   useLayoutEffect(() => {
-    if (prefersReduced()) return
+    if (reduced) return
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-      tl.from('.h-anim', { y: 32, opacity: 0, duration: 0.95, stagger: 0.08 })
-        .from('.h-img', { y: 40, opacity: 0, scale: 0.96, duration: 1.1, stagger: 0.12 }, 0.15)
-        .from('.h-chip', { y: 16, opacity: 0, duration: 0.7, stagger: 0.1 }, 0.7)
-      gsap.to('.h-parallax', {
-        yPercent: -8, ease: 'none',
+      gsap.from('.h-anim', { y: 34, opacity: 0, duration: 1, stagger: 0.09, ease: 'power3.out', delay: 0.15 })
+      gsap.to('.h-content', {
+        yPercent: -14, opacity: 0.2, ease: 'none',
         scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true },
       })
     }, root)
     return () => ctx.revert()
-  }, [])
+  }, [reduced])
+
+  // swipe between slides on touch
+  const touch = useRef(null)
+  const onTouchStart = (e) => { touch.current = e.touches[0].clientX }
+  const onTouchEnd = (e) => {
+    if (touch.current == null) return
+    const dx = e.changedTouches[0].clientX - touch.current
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1)
+    touch.current = null
+  }
 
   return (
-    <section id="top" ref={root} className="relative overflow-hidden pb-16 pt-28 sm:pt-32 lg:min-h-[100dvh] lg:pb-24">
-      {/* soft backdrop washes */}
-      <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 h-[620px] w-[620px] rounded-full bg-plum-soft blur-3xl" />
-      <div aria-hidden="true" className="pointer-events-none absolute -left-32 bottom-0 h-[420px] w-[420px] rounded-full bg-gold-soft blur-3xl" />
-      <div aria-hidden="true" className="grid-bg pointer-events-none absolute inset-0 opacity-70" />
+    <section
+      id="top"
+      ref={root}
+      className="relative flex min-h-[100svh] items-end overflow-hidden bg-ink pb-24 pt-32 sm:items-center sm:pb-28"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      aria-roledescription="carousel"
+      aria-label="Featured photoshoots"
+    >
+      {/* slides */}
+      <div className="absolute inset-0" aria-live="off">
+        {HERO_SLIDES.map((s, i) => (
+          <div
+            key={s.id}
+            className="absolute inset-0 transition-opacity duration-[1400ms] ease-out"
+            style={{ opacity: i === idx ? 1 : 0 }}
+            aria-hidden={i !== idx}
+          >
+            <img
+              key={i === idx ? `on-${idx}` : 'off'}
+              src={img(s.id)}
+              alt={s.alt}
+              className={`h-full w-full object-cover ${i === idx && !reduced ? 'kb' : ''}`}
+              style={{ objectPosition: s.pos }}
+              fetchPriority={i === 0 ? 'high' : 'auto'}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              draggable="false"
+            />
+          </div>
+        ))}
+      </div>
+      {/* legibility washes: deep ice-navy from the left, soft cream fade into the page below */}
+      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#0F1C27]/85 via-[#0F1C27]/45 to-[#0F1C27]/25 sm:bg-gradient-to-r sm:from-[#0F1C27]/80 sm:via-[#0F1C27]/45 sm:to-transparent" />
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0F1C27]/50 to-transparent" />
 
       {/* floating sparkles, top-right */}
-      <div aria-hidden="true" className="pointer-events-none absolute right-6 top-24 hidden h-40 w-56 sm:block">
+      <div aria-hidden="true" className="pointer-events-none absolute right-6 top-28 hidden h-40 w-56 sm:block">
         {[[10, 20, 14, 0], [70, 8, 10, 0.8], [130, 40, 18, 1.6], [180, 4, 9, 0.4], [96, 80, 12, 2.1], [40, 110, 8, 1.2]].map(([x, y, s, d], i) => (
-          <Sparkle key={i} className={`twinkle absolute ${i % 2 ? 'text-plum/50' : 'text-gold'}`} style={{ left: x, top: y, width: s, height: s, '--delay': `${d}s`, '--dur': `${2.6 + i * 0.4}s` }} />
+          <Sparkle key={i} className={`twinkle absolute ${i % 2 ? 'text-white/70' : 'text-ice-mist'}`} style={{ left: x, top: y, width: s, height: s, '--delay': `${d}s`, '--dur': `${2.6 + i * 0.4}s` }} />
         ))}
       </div>
 
-      <div className="container-x relative grid items-center gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-10">
-        <div>
-          <p className="h-anim label inline-flex items-center gap-2 rounded-full border border-line bg-white/70 px-3.5 py-2">
-            <span className="status-dot h-2 w-2 rounded-full bg-[#228b54]" /> Maternity · Newborn · Toddler · 1st Year
+      <div className="h-content container-x relative">
+        <div className="max-w-2xl">
+          <p className="h-anim inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-2 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-white backdrop-blur-md">
+            <span className="status-dot h-2 w-2 rounded-full bg-[#4ade80]" /> Maternity · Newborn · Toddler · Family
           </p>
-          <h1 className="h-anim display-xl mt-6">
-            Little moments,<br /><span className="flourish">styled to last.</span>
+          <h1 className="h-anim display-xl mt-6 !text-white" style={{ textShadow: '0 2px 30px rgba(15,28,39,.35)' }}>
+            Little moments,<br /><span className="font-serif font-medium italic text-ice-mist">styled to last.</span>
           </h1>
-          <p className="h-anim mt-6 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
-            An exclusive Bangalore studio with a wide variety of props and backdrops — 150+ themes across 2,500 sq ft, with costumes for every set. One stop for maternity, newborn, baby and model shoots.
+          <p className="h-anim mt-6 max-w-xl text-lg leading-relaxed text-white/85 sm:text-xl">
+            An exclusive Bangalore studio with 150+ themes across 2,500 sq ft, and costumes for every set. One place for maternity, newborn, toddler and family shoots.
           </p>
           <div className="h-anim mt-9 flex flex-col gap-3 sm:flex-row">
             <Magnetic>
-              <a href="#book" className="btn btn-primary w-full sm:w-auto">
+              <a href="#book" className="btn w-full bg-white text-ink shadow-lift hover:bg-ice-soft sm:w-auto">
                 Book your shoot <ArrowRight className="h-4 w-4" />
               </a>
             </Magnetic>
-            <a href="#gallery" className="btn btn-ghost">
-              <Images className="h-4 w-4" /> See 300+ photos
+            <a href="#services" className="btn border border-white/35 bg-white/10 text-white backdrop-blur-md hover:bg-white/20">
+              <Images className="h-4 w-4" /> Explore our services
             </a>
           </div>
-          <div className="h-anim mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <div className="h-anim mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 text-white">
             <div className="flex items-center gap-3">
               <span className="font-display text-3xl font-bold tracking-tight">5.0</span>
-              <span className="text-sm leading-tight text-muted"><Stars className="h-3.5 w-3.5" /><br />444 ratings · Justdial</span>
+              <span className="text-sm leading-tight text-white/80"><Stars className="h-3.5 w-3.5" /><br />444 ratings · Justdial</span>
             </div>
-            <span className="hidden h-10 w-px bg-line sm:block" />
+            <span className="hidden h-10 w-px bg-white/25 sm:block" />
             <div className="flex items-center gap-3">
               <span className="font-display text-3xl font-bold tracking-tight">4.9</span>
-              <span className="text-sm leading-tight text-muted"><Stars className="h-3.5 w-3.5" /><br />70 Google reviews</span>
+              <span className="text-sm leading-tight text-white/80"><Stars className="h-3.5 w-3.5" /><br />70 Google reviews</span>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* collage */}
-        <div className="h-parallax relative mx-auto w-full max-w-[560px]">
-          <div className="grid grid-cols-[1.15fr_1fr] gap-3 sm:gap-4">
-            <figure className="h-img row-span-2 overflow-hidden rounded-[2rem] shadow-lift">
-              <img src={img(9)} alt="Expecting mother in a flowing lime tulle gown seated in a gold birdcage set" width="1196" height="1600" className="h-full w-full object-cover" fetchPriority="high" />
-            </figure>
-            <figure className="h-img overflow-hidden rounded-[2rem] shadow-soft">
-              <img src={img(22)} alt="Smiling baby girl with pigtails in a pink first-birthday set" width="1600" height="1065" className="aspect-[4/5] h-full w-full object-cover object-[40%_50%]" />
-            </figure>
-            <figure className="h-img overflow-hidden rounded-[2rem] shadow-soft">
-              <img src={img(196)} alt="Newborn asleep on a glowing crescent moon prop above clouds" width="1600" height="1446" className="aspect-[4/5] h-full w-full object-cover object-[78%_50%]" />
-            </figure>
+      {/* slide controls */}
+      <div className="absolute inset-x-0 bottom-6 z-10">
+        <div className="container-x flex items-center justify-between gap-4 pr-20 sm:pr-6 lg:pr-8">
+          <p className="hidden font-mono text-xs uppercase tracking-[0.2em] text-white/80 sm:block">
+            <span className="text-white">{String(idx + 1).padStart(2, '0')}</span> / {String(n).padStart(2, '0')} · {HERO_SLIDES[idx].label}
+          </p>
+          <div className="flex flex-1 items-center gap-1.5 sm:max-w-sm" role="tablist" aria-label="Choose slide">
+            {HERO_SLIDES.map((s, i) => (
+              <button
+                key={s.id}
+                type="button"
+                role="tab"
+                aria-selected={i === idx}
+                aria-label={`Slide ${i + 1}: ${s.label}`}
+                onClick={() => setIdx(i)}
+                className="group relative flex h-11 flex-1 items-center"
+              >
+                <span className="relative block h-[3px] w-full overflow-hidden rounded-full bg-white/30">
+                  {i < idx && <span className="absolute inset-0 bg-white" />}
+                  {i === idx && (
+                    <span
+                      key={`p-${idx}-${paused}`}
+                      className={`absolute inset-0 origin-left bg-white ${paused || reduced ? '' : 'progress-run'}`}
+                      style={{ '--dur': `${SLIDE_MS}ms`, transform: paused || reduced ? 'scaleX(1)' : undefined }}
+                    />
+                  )}
+                </span>
+              </button>
+            ))}
           </div>
-          <div className="h-chip glass absolute -left-3 bottom-10 flex items-center gap-3 rounded-2xl px-4 py-3 shadow-lift sm:-left-8">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gold-soft text-gold-deep"><Palette className="h-5 w-5" /></span>
-            <span className="leading-tight"><b className="font-display text-lg">150+</b><span className="block text-xs text-muted">themes on set</span></span>
-          </div>
-          <div className="h-chip glass float-y absolute -right-2 top-6 flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium shadow-soft sm:-right-5">
-            <Shirt className="h-4 w-4 text-plum" /> Costumes included
+          <div className="flex gap-2">
+            <button type="button" onClick={() => go(-1)} className="hidden sm:grid h-11 w-11 place-items-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/25" aria-label="Previous slide"><ChevronLeft className="h-5 w-5" /></button>
+            <button type="button" onClick={() => setPaused((p) => !p)} className="grid h-11 w-11 place-items-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/25" aria-label={paused ? 'Play slideshow' : 'Pause slideshow'}>
+              {paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+            </button>
+            <button type="button" onClick={() => go(1)} className="hidden sm:grid h-11 w-11 place-items-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/25" aria-label="Next slide"><ChevronRight className="h-5 w-5" /></button>
           </div>
         </div>
       </div>
     </section>
+  )
+}
+
+/* ─────────────────────────── Studio tour video ─────────────────────────── */
+
+function StudioVideo() {
+  const wrap = useRef(null)
+  const video = useRef(null)
+  const [playing, setPlaying] = useState(false)
+  const [muted, setMuted] = useState(true)
+
+  // autoplay (muted) while on screen, pause when scrolled away
+  useEffect(() => {
+    const v = video.current
+    if (!v || prefersReduced()) return
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) v.play().catch(() => {})
+      else v.pause()
+    }, { threshold: 0.45 })
+    io.observe(wrap.current)
+    return () => io.disconnect()
+  }, [])
+
+  const toggle = () => {
+    const v = video.current
+    if (v.paused) v.play().catch(() => {})
+    else v.pause()
+  }
+  const toggleMute = () => {
+    const v = video.current
+    v.muted = !v.muted
+    setMuted(v.muted)
+    if (!v.muted && v.paused) v.play().catch(() => {})
+  }
+
+  return (
+    <div ref={wrap} className="relative mt-12 overflow-hidden rounded-4xl bg-ink shadow-lift" data-reveal>
+      <video
+        ref={video}
+        className="aspect-video w-full object-cover"
+        src="/video/studio-tour.mp4"
+        poster="/video/studio-tour-poster.jpg"
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        aria-label="Video tour of the Vishu Props Studio sets"
+      />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#0F1C27]/75 to-transparent" />
+      {!playing && (
+        <button type="button" onClick={toggle} className="absolute left-1/2 top-1/2 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-ice shadow-lift transition-transform hover:scale-105 active:scale-95" aria-label="Play studio tour">
+          <Play className="ml-1 h-8 w-8" fill="currentColor" />
+        </button>
+      )}
+      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-8">
+        <div className="text-white">
+          <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-ice-mist">Studio tour · 1 min</p>
+          <p className="mt-1.5 font-display text-xl font-bold tracking-tight sm:text-3xl">Step inside Vishu Props Studio</p>
+        </div>
+        <div className="flex shrink-0 gap-2">
+          <button type="button" onClick={toggle} className="grid h-11 w-11 place-items-center rounded-full border border-white/30 bg-white/15 text-white backdrop-blur-md hover:bg-white/30" aria-label={playing ? 'Pause video' : 'Play video'}>
+            {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          </button>
+          <button type="button" onClick={toggleMute} className="grid h-11 w-11 place-items-center rounded-full border border-white/30 bg-white/15 text-white backdrop-blur-md hover:bg-white/30" aria-label={muted ? 'Turn sound on' : 'Mute'}>
+            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -381,7 +532,7 @@ function ThemeShuffler() {
   return (
     <div className="card flex h-full flex-col p-6 sm:p-7" data-reveal onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>
       <div className="flex items-center justify-between">
-        <span className="grid h-11 w-11 place-items-center rounded-2xl bg-plum-soft text-plum"><Palette className="h-5 w-5" /></span>
+        <span className="grid h-11 w-11 place-items-center rounded-2xl bg-ice-soft text-ice"><Palette className="h-5 w-5" /></span>
         <span className="font-mono text-xs text-muted">{String(order[0] + 1).padStart(2, '0')} / 150+</span>
       </div>
       <h3 className="mt-5 text-xl font-bold tracking-tight">150+ themes, ready on set</h3>
@@ -414,10 +565,10 @@ function MoonCradle() {
   // Signature animation: stars fall and settle on the crescent moon, rippling as they land
   const drops = [
     { x: 30, d: 0, dur: 3.4, fall: 118, s: 14, c: 'text-gold' },
-    { x: 46, d: 1.1, dur: 3.0, fall: 102, s: 10, c: 'text-plum/60' },
+    { x: 46, d: 1.1, dur: 3.0, fall: 102, s: 10, c: 'text-ice/60' },
     { x: 62, d: 2.0, dur: 3.6, fall: 96, s: 16, c: 'text-gold' },
-    { x: 38, d: 2.7, dur: 3.2, fall: 112, s: 9, c: 'text-[#D9A6B8]' },
-    { x: 55, d: 0.6, dur: 3.8, fall: 100, s: 12, c: 'text-[#D9A6B8]' },
+    { x: 38, d: 2.7, dur: 3.2, fall: 112, s: 9, c: 'text-[#CDE4F2]' },
+    { x: 55, d: 0.6, dur: 3.8, fall: 100, s: 12, c: 'text-[#CDE4F2]' },
   ]
   return (
     <div className="card flex h-full flex-col overflow-hidden p-6 sm:p-7" data-reveal>
@@ -427,7 +578,7 @@ function MoonCradle() {
       </div>
       <h3 className="mt-5 text-xl font-bold tracking-tight">Gentle with the littlest ones</h3>
       <p className="mt-2 text-[0.95rem] text-muted">Patient photographers, a homely studio and babies handled with great care and love.</p>
-      <div className="relative mt-6 h-64 overflow-hidden rounded-3xl bg-gradient-to-b from-[#2C2140] via-[#4E2E52] to-[#8C5A72]" aria-hidden="true">
+      <div className="relative mt-6 h-64 overflow-hidden rounded-3xl bg-gradient-to-b from-[#1C3247] via-[#34607F] to-[#A9CFE6]" aria-hidden="true">
         {[[12, 18], [80, 26], [22, 54], [88, 60], [70, 14], [50, 36]].map(([x, y], i) => (
           <span key={i} className="twinkle absolute h-1 w-1 rounded-full bg-white" style={{ left: `${x}%`, top: `${y}%`, '--delay': `${i * 0.5}s` }} />
         ))}
@@ -441,7 +592,7 @@ function MoonCradle() {
         <svg viewBox="0 0 220 120" className="absolute bottom-0 left-1/2 w-[86%] -translate-x-1/2">
           <defs>
             <linearGradient id="moonG" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0" stopColor="#F8E6B8" /><stop offset="1" stopColor="#D9A65A" />
+              <stop offset="0" stopColor="#FFF9EC" /><stop offset="1" stopColor="#E3D3B1" />
             </linearGradient>
           </defs>
           <path d="M20 40 Q110 150 200 40 Q110 112 20 40z" fill="url(#moonG)" />
@@ -462,12 +613,12 @@ function SlotScheduler() {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.8, scrollTrigger: { trigger: root.current, start: 'top 85%', toggleActions: 'play pause resume pause' } })
       tl.set('.cursor', { x: 10, y: 150, opacity: 0 })
-        .set('.day-5', { backgroundColor: '#FBF8F3', color: '#211B1E' })
-        .set('.slot-btn', { backgroundColor: '#EADFD4', color: '#665A5F' })
+        .set('.day-5', { backgroundColor: '#FCFAF5', color: '#1B2733' })
+        .set('.slot-btn', { backgroundColor: '#ECE5D7', color: '#57636F' })
         .to('.cursor', { opacity: 1, duration: 0.3 })
         .to('.cursor', { x: () => root.current.querySelector('.day-5').offsetLeft + 14, y: () => root.current.querySelector('.day-5').offsetTop + 14, duration: 1, ease: 'power2.inOut' })
         .to('.cursor', { scale: 0.85, duration: 0.1, yoyo: true, repeat: 1 })
-        .to('.day-5', { backgroundColor: '#6E2F4F', color: '#FBF8F3', duration: 0.2 }, '<')
+        .to('.day-5', { backgroundColor: '#2F6485', color: '#FCFAF5', duration: 0.2 }, '<')
         .to('.cursor', { x: () => root.current.querySelector('.slot-btn').offsetLeft + 40, y: () => root.current.querySelector('.slot-btn').offsetTop + 16, duration: 0.8, ease: 'power2.inOut' }, '+=0.3')
         .to('.cursor', { scale: 0.85, duration: 0.1, yoyo: true, repeat: 1 })
         .to('.slot-btn', { backgroundColor: '#228b54', color: '#fff', duration: 0.2 }, '<')
@@ -478,7 +629,7 @@ function SlotScheduler() {
   return (
     <div className="card flex h-full flex-col p-6 sm:p-7" data-reveal>
       <div className="flex items-center justify-between">
-        <span className="grid h-11 w-11 place-items-center rounded-2xl bg-plum-soft text-plum"><CalendarCheck className="h-5 w-5" /></span>
+        <span className="grid h-11 w-11 place-items-center rounded-2xl bg-ice-soft text-ice"><CalendarCheck className="h-5 w-5" /></span>
         <span className="font-mono text-xs text-muted">Limited slots</span>
       </div>
       <h3 className="mt-5 text-xl font-bold tracking-tight">Reserve your session early</h3>
@@ -497,7 +648,7 @@ function SlotScheduler() {
           {['Morning', 'Afternoon', 'Evening'].map((s) => <span key={s} className="rounded-lg border border-line bg-white px-1 py-2 text-center">{s}</span>)}
         </div>
         <span className="slot-btn mt-4 block w-full rounded-full bg-sand py-2.5 text-center text-sm font-semibold text-muted">Hold my slot</span>
-        <svg className="cursor pointer-events-none absolute left-0 top-0 h-6 w-6 opacity-0 drop-shadow" viewBox="0 0 24 24"><path d="M4 2l16 10-7 1.5L9.5 21z" fill="#211B1E" stroke="#fff" strokeWidth="1.4" /></svg>
+        <svg className="cursor pointer-events-none absolute left-0 top-0 h-6 w-6 opacity-0 drop-shadow" viewBox="0 0 24 24"><path d="M4 2l16 10-7 1.5L9.5 21z" fill="#1B2733" stroke="#fff" strokeWidth="1.4" /></svg>
       </div>
     </div>
   )
@@ -505,10 +656,11 @@ function SlotScheduler() {
 
 function Features() {
   return (
-    <section id="themes" className="relative py-20 sm:py-28">
+    <section id="tour" className="relative scroll-mt-20 py-20 sm:py-28">
       <div className="container-x">
-        <SectionHead label="Why families choose us" title="A studio built around" flourish="your story." text="Many customers praise our wide variety of themes and props, a friendly and patient team, and a spacious, hygienic studio." />
-        <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <SectionHead label="Why families choose us" title="A studio built around" flourish="your story." text="Many customers praise our wide variety of themes and props, a friendly and patient team, and a spacious, hygienic studio. Take a quick tour of the sets." />
+        <StudioVideo />
+        <div id="themes" className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           <ThemeShuffler />
           <MoonCradle />
           <SlotScheduler />
@@ -557,7 +709,7 @@ function Pillars() {
       <div className="container-x grid grid-cols-2 gap-y-10 lg:grid-cols-4">
         {items.map((it, i) => (
           <div key={it.label} className={`px-2 sm:px-6 ${i > 0 ? 'lg:border-l lg:border-line' : ''}`} data-reveal>
-            <p className="font-display text-[clamp(2.4rem,5vw,3.6rem)] font-bold leading-none tracking-[-0.04em] text-plum">
+            <p className="font-display text-[clamp(2.4rem,5vw,3.6rem)] font-bold leading-none tracking-[-0.04em] text-ice">
               <CountUp to={it.to} decimals={it.dec || 0} suffix={it.suffix} />
             </p>
             <p className="mt-3 font-display font-semibold">{it.label}</p>
@@ -566,6 +718,224 @@ function Pillars() {
         ))}
       </div>
     </section>
+  )
+}
+
+/* ─────────────────────────── 4b · Services showcase (5 core services) ─────────────────────────── */
+
+const SHOWCASE = [
+  {
+    key: 'maternity',
+    cat: 'maternity',
+    icon: Heart,
+    kicker: 'For the bump',
+    title: 'Maternity',
+    lead: 'Celebrate the last weeks before you meet your little one — in flowing gowns, graceful sarees and sets made for this moment.',
+    body: 'Choose solo, couple or family maternity portraits. Pick from our wardrobe of tulle gowns and trail dresses, or go traditional with themes like the much-loved Ravi Varma set. Our photographers guide every pose, so you can relax and simply enjoy it.',
+    points: ['Wardrobe of maternity gowns', 'Solo, couple & family portraits', 'Ravi Varma & traditional themes', 'Makeup artist available'],
+    imgs: [123, 203, 32, 13, 141],
+  },
+  {
+    key: 'newborn',
+    cat: 'newborn',
+    icon: Baby,
+    kicker: 'The first few weeks',
+    title: 'New Born',
+    lead: 'Tiny fingers, sleepy yawns and dreamy little worlds — moons, nests, boats and flower beds sized just for your baby.',
+    body: 'Newborn sessions are calm and unhurried. We work at your baby’s pace in a warm, homely studio, and parents tell us their little ones are handled with great care and love. Wraps, headbands and props are all ready on set.',
+    points: ['Wraps, nests & dreamy props', 'Calm, homely studio', 'Gentle, patient handling', 'Parents can join the frame'],
+    imgs: [217, 169, 40, 89, 235],
+  },
+  {
+    key: 'toddler',
+    cat: 'baby',
+    icon: Sparkles,
+    kicker: 'Six months to two years',
+    title: 'Toddler Shoot',
+    lead: 'From half-birthdays to the big “One” and “Two” — playful sets, cake smashes and costumes for every little personality.',
+    body: 'Little Krishna, seaside sailor, vintage music room, milk baths and pastel first-birthday sets: families often shoot several themes in one visit, and suitable costumes are provided for each one. Perfect for pre-birthday invites and milestone albums.',
+    points: ['Costumes for every theme', 'Cake smash & pre-birthday setups', 'Multiple themes in one session', 'Toys & props kids love'],
+    imgs: [22, 7, 26, 65, 154],
+  },
+  {
+    key: 'family',
+    cat: 'family',
+    icon: Users,
+    kicker: 'Everyone together',
+    title: 'Family',
+    lead: 'Parents, grandparents, siblings and the newest member — portraits the whole family will want framed.',
+    body: 'Gather everyone on the royal throne set, the vintage window or our light-filled boho bedroom. We arrange natural groupings for families of every size, and capture the candid moments in between.',
+    points: ['Sets for big & small groups', 'Grandparents & siblings welcome', 'Couple portraits too', 'Coordinated, relaxed posing'],
+    imgs: [168, 101, 0, 24, 204],
+  },
+  {
+    key: 'rental',
+    cat: 'studio',
+    icon: Building2,
+    kicker: 'For photographers',
+    title: 'Studio Rental',
+    lead: 'Rent our 2,500 sq ft studio space and props — 150+ ready themes, backdrops and furniture for your own shoots.',
+    body: 'Ideal for photographers, model and fashion shoots, and content creators. Bring your crew and use our sets, from the green parlour and royal white room to the boho bedroom and the full prop store.',
+    points: ['2,500 sq ft of studio space', '150+ themes & backdrops', 'Ideal for model & fashion shoots', 'Two locations in Bangalore'],
+    imgs: [304, 308, 292, 299, 285],
+  },
+]
+
+const catItems = (cat) => GALLERY.filter((g) => g.cat === cat)
+
+function ServicesShowcase({ onOpenGallery, onOpenPhoto }) {
+  return (
+    <section id="services" className="bg-white py-20 sm:py-28">
+      <div className="container-x">
+        <SectionHead label="Our services" title="Shoots we" flourish="specialise in." text="Five ways to tell your story at Vishu Props Studio. Tap any photo to view it full screen, or open the complete gallery for each service." />
+
+        {/* quick jump */}
+        <div className="no-scrollbar -mx-4 mt-10 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0" data-reveal>
+          {SHOWCASE.map((s) => (
+            <a key={s.key} href={`#svc-${s.key}`} className="inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border border-line bg-ivory px-4 text-sm font-medium hover:border-ice/40 hover:bg-ice-soft">
+              <s.icon className="h-4 w-4 text-ice" /> {s.title}
+            </a>
+          ))}
+        </div>
+
+        <div className="mt-16 space-y-24 sm:space-y-32">
+          {SHOWCASE.map((s, i) => {
+            const items = catItems(s.cat)
+            const flip = i % 2 === 1
+            return (
+              <article key={s.key} id={`svc-${s.key}`} className="grid scroll-mt-28 items-center gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+                <div className={flip ? 'lg:order-2' : ''} data-reveal>
+                  <div className="flex items-center gap-4">
+                    <span className="font-mono text-sm text-gold-deep">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="h-px w-12 bg-line" />
+                    <span className="label">{s.kicker}</span>
+                  </div>
+                  <h3 className="mt-5 text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.05] tracking-[-0.03em]">{s.title}</h3>
+                  <p className="mt-5 text-xl leading-relaxed text-ink/85">{s.lead}</p>
+                  <p className="mt-4 leading-relaxed text-muted">{s.body}</p>
+                  <ul className="mt-7 grid gap-3 sm:grid-cols-2">
+                    {s.points.map((p) => (
+                      <li key={p} className="flex items-start gap-2.5 text-[0.95rem]">
+                        <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-ice-soft text-ice"><Check className="h-3 w-3" strokeWidth={3} /></span>
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                    <button type="button" onClick={() => onOpenGallery(s)} className="btn btn-primary">
+                      <Images className="h-4 w-4" /> View full gallery <span className="font-mono text-xs opacity-75">({items.length})</span>
+                    </button>
+                    <a
+                      href={`https://wa.me/${PHONES.vidyaranyapura.wa}?text=${encodeURIComponent(`Hi Vishu Props Studio, I'd like to know more about your ${s.title.toLowerCase()} ${s.key === 'rental' ? '' : 'shoot '}packages.`)}`}
+                      target="_blank" rel="noreferrer" className="btn btn-ghost"
+                    >
+                      <WhatsAppIcon className="h-4 w-4 text-[#1f9d55]" /> Enquire
+                    </a>
+                  </div>
+                </div>
+
+                {/* photo mosaic */}
+                <div className={`grid grid-cols-2 gap-3 sm:h-[440px] sm:grid-cols-4 sm:grid-rows-2 sm:gap-4 lg:h-[500px] ${flip ? 'lg:order-1' : ''}`}>
+                  {s.imgs.map((id, j) => {
+                    const at = items.findIndex((g) => g.id === id)
+                    const last = j === s.imgs.length - 1
+                    return (
+                      <RevealTile
+                        key={id}
+                        as="button"
+                        delay={j * 90}
+                        onClick={() => (last ? onOpenGallery(s) : onOpenPhoto(items, Math.max(0, at)))}
+                        className={`group relative overflow-hidden rounded-3xl bg-blush ${last ? 'cursor-pointer' : 'cursor-zoom-in'} ${j === 0 ? 'col-span-2 aspect-[16/11] sm:row-span-2 sm:aspect-auto' : 'aspect-square sm:aspect-auto'}`}
+                        aria-label={last ? `View all ${items.length} ${s.title} photos` : `View ${s.title} photo ${j + 1}`}
+                      >
+                        <img src={img(id, j === 0 ? 'full' : 'thumb')} alt="" loading="lazy" className="reveal-img h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]" />
+                        {last && (
+                          <span
+                            aria-hidden="true"
+                            className="absolute inset-0 flex flex-col items-center justify-center bg-ink/45 text-white backdrop-blur-[2px] transition-colors group-hover:bg-ink/55"
+                          >
+                            <span className="font-display text-2xl font-bold">+{items.length - 4}</span>
+                            <span className="font-mono text-[0.65rem] uppercase tracking-widest">View all</span>
+                          </span>
+                        )}
+                      </RevealTile>
+                    )
+                  })}
+                </div>
+              </article>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* Full-screen gallery for one service: the whole collection as a grid; tap a photo for the viewer */
+function ServiceGallery({ svc, onClose }) {
+  const items = useMemo(() => catItems(svc.cat), [svc])
+  const [open, setOpen] = useState(null)
+  const scroller = useRef(null)
+  const closeRef = useRef(null)
+  const openRef = useRef(open)
+  openRef.current = open
+
+  useEffect(() => {
+    const prev = document.activeElement
+    lockScroll()
+    closeRef.current?.focus()
+    const onKey = (e) => { if (e.key === 'Escape' && openRef.current === null) onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => { unlockScroll(); window.removeEventListener('keydown', onKey); prev?.focus?.() }
+  }, [onClose])
+
+  return (
+    <div className="sheet-in fixed inset-0 z-[90] flex flex-col bg-ivory" role="dialog" aria-modal="true" aria-label={`${svc.title} gallery`}>
+      <header className="glass z-10 border-b border-line">
+        <div className="container-x flex items-center justify-between gap-4 py-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <button ref={closeRef} type="button" onClick={onClose} className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-line bg-white hover:bg-ice-soft" aria-label="Close gallery">
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <div className="min-w-0">
+              <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-gold-deep">Gallery · {items.length} photos</p>
+              <h2 className="truncate font-display text-xl font-bold tracking-tight sm:text-2xl">{svc.title}</h2>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <a
+              href={`https://wa.me/${PHONES.vidyaranyapura.wa}?text=${encodeURIComponent(`Hi Vishu Props Studio, I saw your ${svc.title.toLowerCase()} gallery and would like to book.`)}`}
+              target="_blank" rel="noreferrer" className="btn btn-primary hidden !min-h-[44px] !px-5 text-sm sm:inline-flex"
+            >
+              Book this shoot
+            </a>
+            <button type="button" onClick={onClose} className="grid h-11 w-11 place-items-center rounded-full border border-line bg-white hover:bg-ice-soft" aria-label="Close gallery"><X className="h-5 w-5" /></button>
+          </div>
+        </div>
+      </header>
+      <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <div className="container-x py-8 sm:py-10">
+          <p className="max-w-2xl text-muted">{svc.lead}</p>
+          <div className="mt-8 columns-2 gap-3 sm:columns-3 sm:gap-4 lg:columns-4">
+            {items.map((g, i) => (
+              <RevealTile
+                key={g.src}
+                as="button"
+                root={scroller}
+                delay={(i % 4) * 70}
+                onClick={() => setOpen(i)}
+                className="group relative mb-3 block w-full cursor-zoom-in overflow-hidden rounded-2xl bg-blush sm:mb-4"
+                style={{ aspectRatio: `${g.w} / ${g.h}` }}
+                aria-label={`Open ${svc.title} photo ${i + 1} of ${items.length}`}
+              >
+                <img src={`/img/thumb/${g.src}`} alt="" loading="lazy" decoding="async" className="reveal-img h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]" />
+              </RevealTile>
+            ))}
+          </div>
+        </div>
+      </div>
+      {open !== null && <Lightbox items={items} index={open} onIndex={setOpen} onClose={() => setOpen(null)} title={svc.title} />}
+    </div>
   )
 }
 
@@ -605,7 +975,7 @@ function Protocol() {
                 <div className="flex items-center gap-4">
                   <span className="font-mono text-sm text-gold-deep">{s.n}</span>
                   <span className="h-px flex-1 bg-line" />
-                  <span className="grid h-11 w-11 place-items-center rounded-2xl bg-plum-soft text-plum"><s.icon className="h-5 w-5" /></span>
+                  <span className="grid h-11 w-11 place-items-center rounded-2xl bg-ice-soft text-ice"><s.icon className="h-5 w-5" /></span>
                 </div>
                 <h3 className="mt-8 text-[clamp(1.6rem,3vw,2.3rem)] font-bold leading-tight tracking-[-0.025em]">{s.title}</h3>
                 <p className="mt-4 text-lg leading-relaxed text-muted">{s.text}</p>
@@ -621,25 +991,27 @@ function Protocol() {
   )
 }
 
-/* ─────────────────────────── 6 · Services grid ─────────────────────────── */
+/* ─────────────────────────── 6 · More services + event prices ─────────────────────────── */
 
-function Services() {
+const MORE = [
+  { icon: Cake, title: 'Pre-Birthday & Cake Smash', text: '“One”, “Two” and half-birthday setups with balloons, cakes and toys — ready before the party.', img: 154 },
+  { icon: Camera, title: 'Model & Fashion Shoot', text: 'Portfolio and fashion shoots using our backdrops, lighting and 2,500 sq ft of set space.', img: 87 },
+  { icon: Gift, title: 'Event Coverage', text: 'Wedding, engagement and birthday photography, with albums and videography.', img: 316 },
+]
+
+function MoreServices() {
   return (
-    <section id="services" className="py-20 sm:py-28">
+    <section id="more" className="py-20 sm:py-28">
       <div className="container-x">
-        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <SectionHead label="Shoots & services" title="Every milestone," flourish="one studio." text="From the first bump to the first birthday — and the studio itself, if you’re a photographer." />
-          <a href="#book" className="btn btn-ghost self-start lg:self-auto" data-reveal>Ask for packages <ArrowUpRight className="h-4 w-4" /></a>
-        </div>
-        <div className="mt-14 grid gap-px overflow-hidden rounded-4xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4" data-reveal>
-          {SERVICES.map((s) => (
-            <article key={s.title} className="group relative flex flex-col bg-white">
-              <div className="relative aspect-[16/9] overflow-hidden sm:aspect-[4/3]">
+        <SectionHead label="Also at Vishu" title="More ways to" flourish="celebrate." text="Milestone parties, portfolios and the big days — we cover those too." />
+        <div className="mt-12 grid gap-px overflow-hidden rounded-4xl border border-line bg-line md:grid-cols-3" data-reveal>
+          {MORE.map((s) => (
+            <article key={s.title} className="group flex flex-col bg-white">
+              <div className="relative aspect-[16/10] overflow-hidden">
                 <img src={img(s.img, 'thumb')} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]" />
-                {s.tag && <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-widest text-plum">{s.tag}</span>}
               </div>
               <div className="flex flex-1 flex-col p-6">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-plum-soft text-plum transition-colors group-hover:bg-plum group-hover:text-ivory"><s.icon className="h-5 w-5" /></span>
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-ice-soft text-ice transition-colors group-hover:bg-ice group-hover:text-white"><s.icon className="h-5 w-5" /></span>
                 <h3 className="mt-4 text-lg font-bold tracking-tight">{s.title}</h3>
                 <p className="mt-2 text-[0.95rem] leading-relaxed text-muted">{s.text}</p>
               </div>
@@ -658,10 +1030,10 @@ function Services() {
             {PRICES.map((p) => (
               <div key={p.title} className="card flex flex-col p-6" data-reveal>
                 <p className="font-display font-semibold">{p.title}</p>
-                <p className="mt-3 font-display text-2xl font-bold tracking-tight text-plum">{p.range}</p>
+                <p className="mt-3 font-display text-2xl font-bold tracking-tight text-ice">{p.range}</p>
                 <p className="font-mono text-[0.68rem] uppercase tracking-widest text-muted">per package</p>
                 <p className="mt-4 text-sm leading-relaxed text-muted">{p.text}</p>
-                <a href={`https://wa.me/${PHONES.vidyaranyapura.wa}?text=${encodeURIComponent(`Hi, I'd like details on ${p.title}.`)}`} target="_blank" rel="noreferrer" className="mt-5 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-semibold text-plum hover:underline">Enquire now <ArrowRight className="h-4 w-4" /></a>
+                <a href={`https://wa.me/${PHONES.vidyaranyapura.wa}?text=${encodeURIComponent(`Hi, I'd like details on ${p.title}.`)}`} target="_blank" rel="noreferrer" className="mt-5 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-semibold text-ice hover:underline">Enquire now <ArrowRight className="h-4 w-4" /></a>
               </div>
             ))}
           </div>
@@ -671,12 +1043,38 @@ function Services() {
   )
 }
 
-/* ─────────────────────────── 7 · Gallery + Lightbox ─────────────────────────── */
+/* ─────────────────────────── 7 · Gallery, scroll reveals + viewer ─────────────────────────── */
 
-function Lightbox({ items, index, onClose, onIndex }) {
+/* Fades, lifts and un-blurs a tile the first time it scrolls into view */
+function RevealTile({ as: Tag = 'div', delay = 0, root, className = '', style, children, ...rest }) {
+  const ref = useRef(null)
+  const [inView, setInView] = useState(prefersReduced)
+  useEffect(() => {
+    if (inView) return
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setInView(true); io.disconnect() }
+    }, { root: root?.current ?? null, rootMargin: '0px 0px -6% 0px', threshold: 0.1 })
+    io.observe(ref.current)
+    return () => io.disconnect()
+  }, [inView, root])
+  return (
+    <Tag
+      ref={ref}
+      type={Tag === 'button' ? 'button' : undefined}
+      className={`reveal-tile ${inView ? 'is-in' : ''} ${className}`}
+      style={{ ...style, '--d': `${delay}ms` }}
+      {...rest}
+    >
+      {children}
+    </Tag>
+  )
+}
+
+function Lightbox({ items, index, onClose, onIndex, title }) {
   const item = items[index]
   const closeRef = useRef(null)
   const stage = useRef(null)
+  const strip = useRef(null)
   const drag = useRef(null)
   const [dx, setDx] = useState(0)
 
@@ -685,24 +1083,25 @@ function Lightbox({ items, index, onClose, onIndex }) {
   useEffect(() => {
     const prev = document.activeElement
     closeRef.current?.focus()
-    document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = ''; prev?.focus?.() }
+    lockScroll()
+    return () => { unlockScroll(); prev?.focus?.() }
   }, [])
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') { e.stopPropagation(); onClose() }
       if (e.key === 'ArrowRight') go(1)
       if (e.key === 'ArrowLeft') go(-1)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [go, onClose])
-  // preload neighbours
+  // preload neighbours + keep the active thumbnail centred
   useEffect(() => {
     ;[1, -1].forEach((d) => { const n = items[(index + d + items.length) % items.length]; if (n) new Image().src = `/img/full/${n.src}` })
+    strip.current?.querySelector(`[data-i="${index}"]`)?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: prefersReduced() ? 'auto' : 'smooth' })
   }, [index, items])
 
-  // 1:1 swipe with velocity-based commit
+  // 1:1 swipe; commit using projected momentum, not just distance
   const onDown = (e) => {
     if (e.pointerType === 'mouse') return
     stage.current.setPointerCapture(e.pointerId)
@@ -726,33 +1125,47 @@ function Lightbox({ items, index, onClose, onIndex }) {
   }
 
   if (!item) return null
-  const cat = CATS.find((c) => c.key === item.cat)?.label
+  const cat = title || CATS.find((c) => c.key === item.cat)?.label
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#120d10]/95" role="dialog" aria-modal="true" aria-label="Photo viewer">
-      <div className="flex items-center justify-between p-3 text-ivory sm:p-5">
-        <p className="font-mono text-xs uppercase tracking-widest text-ivory/70">{cat} · {index + 1} / {items.length}</p>
+    <div className="fixed inset-0 z-[100] flex flex-col bg-[#0E1820]/95 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Photo viewer">
+      <div className="flex items-center justify-between p-3 text-white sm:p-5">
+        <p className="font-mono text-xs uppercase tracking-widest text-white/75">{cat} · <span className="text-white">{index + 1}</span> / {items.length}</p>
         <button ref={closeRef} type="button" onClick={onClose} className="grid h-11 w-11 place-items-center rounded-full bg-white/10 hover:bg-white/20" aria-label="Close viewer"><X className="h-5 w-5" /></button>
       </div>
       <div
         ref={stage}
-        className="relative flex min-h-0 flex-1 touch-pan-y select-none items-center justify-center px-2 pb-6 sm:px-20"
+        className="relative flex min-h-0 flex-1 touch-pan-y select-none items-center justify-center px-2 sm:px-20"
         onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <img
           key={item.src}
           src={`/img/full/${item.src}`}
-          alt={`Vishu Props Studio — ${cat} photo`}
+          alt={`Vishu Props Studio — ${cat} photo ${index + 1}`}
           className="max-h-full max-w-full rounded-xl object-contain shadow-2xl"
           style={{ transform: `translateX(${dx}px)`, transition: dx ? 'none' : 'transform 380ms cubic-bezier(.32,.72,0,1)', animation: 'star-fadein 260ms ease-out' }}
           draggable="false"
         />
-        <button type="button" onClick={() => go(-1)} className="absolute left-3 top-1/2 hidden h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-ivory hover:bg-white/20 sm:grid" aria-label="Previous photo"><ChevronLeft className="h-6 w-6" /></button>
-        <button type="button" onClick={() => go(1)} className="absolute right-3 top-1/2 hidden h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-ivory hover:bg-white/20 sm:grid" aria-label="Next photo"><ChevronRight className="h-6 w-6" /></button>
+        <button type="button" onClick={() => go(-1)} className="absolute left-3 top-1/2 hidden h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white hover:bg-white/20 sm:grid" aria-label="Previous photo"><ChevronLeft className="h-6 w-6" /></button>
+        <button type="button" onClick={() => go(1)} className="absolute right-3 top-1/2 hidden h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white hover:bg-white/20 sm:grid" aria-label="Next photo"><ChevronRight className="h-6 w-6" /></button>
       </div>
-      <div className="flex justify-center gap-3 pb-5 sm:hidden">
-        <button type="button" onClick={() => go(-1)} className="grid h-12 w-12 place-items-center rounded-full bg-white/10 text-ivory" aria-label="Previous photo"><ChevronLeft className="h-6 w-6" /></button>
-        <button type="button" onClick={() => go(1)} className="grid h-12 w-12 place-items-center rounded-full bg-white/10 text-ivory" aria-label="Next photo"><ChevronRight className="h-6 w-6" /></button>
+      {/* thumbnail strip */}
+      <div ref={strip} className="no-scrollbar overflow-x-auto px-4 py-4 sm:py-5" aria-label="Thumbnails">
+        <div className="mx-auto flex w-max gap-2">
+        {items.map((g, i) => (
+          <button
+            key={g.src}
+            data-i={i}
+            type="button"
+            onClick={() => onIndex(i)}
+            aria-label={`Show photo ${i + 1}`}
+            aria-current={i === index}
+            className={`h-14 w-14 shrink-0 overflow-hidden rounded-lg transition-all duration-200 sm:h-16 sm:w-16 ${i === index ? 'opacity-100 ring-2 ring-ice-mist ring-offset-2 ring-offset-[#0E1820]' : 'opacity-45 hover:opacity-80'}`}
+          >
+            <img src={`/img/thumb/${g.src}`} alt="" loading="lazy" className="h-full w-full object-cover" />
+          </button>
+        ))}
+        </div>
       </div>
     </div>
   )
@@ -780,26 +1193,27 @@ function Gallery() {
               role="tab"
               aria-selected={cat === c.key}
               onClick={() => { setCat(c.key); setShown(PAGE) }}
-              className={`inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors ${cat === c.key ? 'border-plum bg-plum text-ivory' : 'border-line bg-ivory text-ink hover:border-plum/40'}`}
+              className={`inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors ${cat === c.key ? 'border-ice bg-ice text-white' : 'border-line bg-ivory text-ink hover:border-ice/40'}`}
             >
-              {c.label} <span className={`font-mono text-[0.7rem] ${cat === c.key ? 'text-ivory/70' : 'text-muted'}`}>{counts[c.key]}</span>
+              {c.label} <span className={`font-mono text-[0.7rem] ${cat === c.key ? 'text-white/75' : 'text-muted'}`}>{counts[c.key]}</span>
             </button>
           ))}
         </div>
 
-        <div className="mt-8 columns-2 gap-3 sm:columns-3 sm:gap-4 lg:columns-4">
+        <div key={cat} className="mt-8 columns-2 gap-3 sm:columns-3 sm:gap-4 lg:columns-4">
           {visible.map((g, i) => (
-            <button
+            <RevealTile
               key={g.src}
-              type="button"
+              as="button"
+              delay={(i % 4) * 80}
               onClick={() => setOpen(i)}
               className="group relative mb-3 block w-full cursor-zoom-in overflow-hidden rounded-2xl bg-blush sm:mb-4"
               style={{ aspectRatio: `${g.w} / ${g.h}` }}
               aria-label={`Open ${CATS.find((c) => c.key === g.cat)?.label} photo ${i + 1}`}
             >
-              <img src={`/img/thumb/${g.src}`} alt="" loading="lazy" decoding="async" width={g.w} height={g.h} className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]" />
+              <img src={`/img/thumb/${g.src}`} alt="" loading="lazy" decoding="async" width={g.w} height={g.h} className="reveal-img h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]" />
               <span className="absolute inset-0 bg-ink/0 transition-colors group-hover:bg-ink/10" />
-            </button>
+            </RevealTile>
           ))}
         </div>
 
@@ -808,7 +1222,7 @@ function Gallery() {
           {shown < items.length && (
             <button type="button" onClick={() => setShown((s) => s + PAGE)} className="btn btn-ghost">Show more photos</button>
           )}
-          <a href={INSTAGRAM} target="_blank" rel="noreferrer" className="mt-2 inline-flex min-h-[44px] items-center gap-2 text-sm font-semibold text-plum hover:underline">
+          <a href={INSTAGRAM} target="_blank" rel="noreferrer" className="mt-2 inline-flex min-h-[44px] items-center gap-2 text-sm font-semibold text-ice hover:underline">
             <InstagramIcon className="h-4 w-4" /> More on Instagram @vishupropsstudio
           </a>
         </div>
@@ -839,7 +1253,7 @@ function Studios() {
                   <p className="mt-2 text-muted">{s.note}</p>
                   <ul className="mt-6 space-y-3 text-[0.95rem]">
                     <li className="flex gap-3"><MapPin className="mt-0.5 h-5 w-5 shrink-0 text-gold-deep" /><span>{s.address}</span></li>
-                    <li className="flex gap-3"><Phone className="mt-0.5 h-5 w-5 shrink-0 text-gold-deep" /><a href={`tel:${p.tel}`} className="font-medium hover:text-plum">{p.label}</a></li>
+                    <li className="flex gap-3"><Phone className="mt-0.5 h-5 w-5 shrink-0 text-gold-deep" /><a href={`tel:${p.tel}`} className="font-medium hover:text-ice">{p.label}</a></li>
                     <li className="flex gap-3"><Clock className="mt-0.5 h-5 w-5 shrink-0 text-gold-deep" /><span>Open until 8:30 pm · by appointment</span></li>
                   </ul>
                   <div className="mt-7 flex flex-wrap gap-3">
@@ -882,7 +1296,7 @@ function Reviews() {
               <blockquote className="mt-4 leading-relaxed text-ink/90">“{r.text}”</blockquote>
               <figcaption className="mt-6 flex items-center justify-between gap-3 border-t border-line pt-5">
                 <span className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-full bg-plum-soft font-display font-bold text-plum">{r.name.split(' ').map((w) => w[0]).slice(0, 2).join('')}</span>
+                  <span className="grid h-10 w-10 place-items-center rounded-full bg-ice-soft font-display font-bold text-ice">{r.name.split(' ').map((w) => w[0]).slice(0, 2).join('')}</span>
                   <span><span className="block font-display font-semibold">{r.name}</span><span className="text-xs text-muted">Google review · {r.when}</span></span>
                 </span>
                 <Stars className="h-3.5 w-3.5" />
@@ -970,7 +1384,7 @@ function ContactForm() {
 
   return (
     <section id="book" className="relative overflow-hidden bg-white py-20 sm:py-28">
-      <div aria-hidden="true" className="pointer-events-none absolute -right-40 top-10 h-[480px] w-[480px] rounded-full bg-plum-soft blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -right-40 top-10 h-[480px] w-[480px] rounded-full bg-ice-soft blur-3xl" />
       <div className="container-x relative grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
           <SectionHead label="Book a shoot" title="Let’s plan your" flourish="session." text="Share a few details and we’ll get back to you with themes, availability and packages. Prefer to talk? Call or WhatsApp either studio." />
@@ -979,12 +1393,12 @@ function ContactForm() {
               <div key={n} className="flex items-center justify-between gap-4 rounded-3xl border border-line bg-ivory p-5">
                 <div>
                   <p className="font-mono text-[0.68rem] uppercase tracking-widest text-gold-deep">{n}</p>
-                  <a href={`tel:${p.tel}`} className="mt-1 block font-display text-xl font-bold tracking-tight hover:text-plum">{p.label}</a>
+                  <a href={`tel:${p.tel}`} className="mt-1 block font-display text-xl font-bold tracking-tight hover:text-ice">{p.label}</a>
                 </div>
                 <a href={`https://wa.me/${p.wa}`} target="_blank" rel="noreferrer" className="grid h-12 w-12 place-items-center rounded-full bg-[#1f9d55] text-white shadow-soft" aria-label={`WhatsApp the ${n} studio`}><WhatsAppIcon className="h-6 w-6" /></a>
               </div>
             ))}
-            <p className="text-sm text-muted">Model shoots & studio rental: <a href={`tel:${PHONES.general.tel}`} className="font-semibold text-ink hover:text-plum">{PHONES.general.label}</a></p>
+            <p className="text-sm text-muted">Model shoots & studio rental: <a href={`tel:${PHONES.general.tel}`} className="font-semibold text-ink hover:text-ice">{PHONES.general.label}</a></p>
           </div>
         </div>
 
@@ -995,17 +1409,17 @@ function ContactForm() {
               <h3 className="mt-6 text-2xl font-bold tracking-tight">Thank you, {summary.name.split(' ')[0]}!</h3>
               <p className="mt-3 max-w-sm text-muted">Your request is ready. Send it on WhatsApp so the studio can confirm your slot right away.</p>
               <a href={waLink} target="_blank" rel="noreferrer" className="btn btn-primary mt-8"><WhatsAppIcon className="h-5 w-5" /> Send on WhatsApp</a>
-              <button type="button" onClick={() => { setStatus('idle'); setSummary(null); setFile(null) }} className="mt-4 min-h-[44px] text-sm font-medium text-muted hover:text-plum">Start a new request</button>
+              <button type="button" onClick={() => { setStatus('idle'); setSummary(null); setFile(null) }} className="mt-4 min-h-[44px] text-sm font-medium text-muted hover:text-ice">Start a new request</button>
             </div>
           ) : (
             <form ref={formRef} onSubmit={onSubmit} noValidate className="grid gap-5 sm:grid-cols-2">
               <div>
-                <label htmlFor="name" className="mb-2 block text-sm font-semibold">Your name <span className="text-plum">*</span></label>
+                <label htmlFor="name" className="mb-2 block text-sm font-semibold">Your name <span className="text-ice">*</span></label>
                 <input id="name" name="name" autoComplete="name" className="field" onBlur={onBlur} onInput={onInput} aria-invalid={!!errors.name} aria-describedby={errors.name ? 'name-err' : undefined} />
                 {errors.name && <p id="name-err" role="alert" className="mt-1.5 text-sm text-[#b42318]">{errors.name}</p>}
               </div>
               <div>
-                <label htmlFor="phone" className="mb-2 block text-sm font-semibold">Mobile number <span className="text-plum">*</span></label>
+                <label htmlFor="phone" className="mb-2 block text-sm font-semibold">Mobile number <span className="text-ice">*</span></label>
                 <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" className="field" onBlur={onBlur} onInput={onInput} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'phone-err' : undefined} />
                 {errors.phone && <p id="phone-err" role="alert" className="mt-1.5 text-sm text-[#b42318]">{errors.phone}</p>}
               </div>
@@ -1037,11 +1451,11 @@ function ContactForm() {
                   onDragOver={(e) => { e.preventDefault(); setDrag(true) }}
                   onDragLeave={() => setDrag(false)}
                   onDrop={(e) => { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files?.[0]; if (f) setFile(f) }}
-                  className={`flex min-h-[88px] cursor-pointer items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-4 text-sm transition-colors ${drag ? 'border-plum bg-plum-soft' : 'border-line bg-ivory hover:border-plum/40'}`}
+                  className={`flex min-h-[88px] cursor-pointer items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-4 text-sm transition-colors ${drag ? 'border-ice bg-ice-soft' : 'border-line bg-ivory hover:border-ice/40'}`}
                 >
                   <input type="file" accept="image/*" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-                  <Upload className="h-5 w-5 text-plum" />
-                  <span className="text-muted">{file ? <b className="text-ink">{file.name}</b> : <>Drag a reference photo here or <u className="text-plum">browse</u></>}</span>
+                  <Upload className="h-5 w-5 text-ice" />
+                  <span className="text-muted">{file ? <b className="text-ink">{file.name}</b> : <>Drag a reference photo here or <u className="text-ice">browse</u></>}</span>
                 </label>
               </div>
               <div className="sm:col-span-2">
@@ -1076,7 +1490,7 @@ function Footer() {
         <div>
           <p className="font-mono text-[0.68rem] uppercase tracking-widest text-gold">Shoots</p>
           <ul className="mt-4 space-y-2.5 text-sm">
-            {['Maternity', 'Newborn', 'Toddler & 1st year', 'Pre-birthday', 'Family portraits', 'Studio rental'].map((s) => <li key={s}><a href="#services" className="hover:text-ivory">{s}</a></li>)}
+            {[['Maternity', 'maternity'], ['New Born', 'newborn'], ['Toddler shoot', 'toddler'], ['Family', 'family'], ['Studio rental', 'rental']].map(([s, k]) => <li key={s}><a href={`#svc-${k}`} className="hover:text-ivory">{s}</a></li>)}
           </ul>
         </div>
         {STUDIOS.map((s) => (
@@ -1112,16 +1526,21 @@ export default function App() {
     return () => { triggers.forEach((t) => t.kill()); gsap.set(els, { clearProps: 'all' }) }
   }, [])
 
+  const [svcGallery, setSvcGallery] = useState(null)
+  const [photo, setPhoto] = useState(null) // { items, index } for photos opened straight from a service mosaic
+  const closeSvcGallery = useCallback(() => setSvcGallery(null), [])
+
   return (
     <>
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-full focus:bg-plum focus:px-5 focus:py-3 focus:text-ivory">Skip to content</a>
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-full focus:bg-ice focus:px-5 focus:py-3 focus:text-ivory">Skip to content</a>
       <Navbar />
       <main id="main">
         <Hero />
         <Features />
         <Pillars />
+        <ServicesShowcase onOpenGallery={setSvcGallery} onOpenPhoto={(items, index) => setPhoto({ items, index })} />
         <Protocol />
-        <Services />
+        <MoreServices />
         <Gallery />
         <Studios />
         <Reviews />
@@ -1129,6 +1548,8 @@ export default function App() {
         <ContactForm />
       </main>
       <Footer />
+      {svcGallery && <ServiceGallery svc={svcGallery} onClose={closeSvcGallery} />}
+      {photo && <Lightbox items={photo.items} index={photo.index} onIndex={(i) => setPhoto((p) => ({ ...p, index: i }))} onClose={() => setPhoto(null)} />}
       {/* floating WhatsApp for mobile */}
       <a href={WA_DEFAULT} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp" className="fixed bottom-5 right-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-[#1f9d55] text-white shadow-lift transition-transform active:scale-95 lg:hidden">
         <WhatsAppIcon className="h-7 w-7" />

@@ -9,9 +9,9 @@
     font-size: 1rem;
     line-height: 1.6;
   }
-  ::selection { background: #6E2F4F; color: #FBF8F3; }
+  ::selection { background: #2F6485; color: #FCFAF5; }
   h1, h2, h3, h4 { @apply font-display text-ink; }
-  :focus-visible { outline: 2px solid #6E2F4F; outline-offset: 3px; border-radius: 6px; }
+  :focus-visible { outline: 2px solid #2F6485; outline-offset: 3px; border-radius: 6px; }
   img { -webkit-user-drag: none; }
 }
 
@@ -30,10 +30,10 @@
     letter-spacing: -0.028em;
     font-weight: 700;
   }
-  .flourish { @apply font-serif italic font-medium text-plum; letter-spacing: -0.01em; }
+  .flourish { @apply font-serif italic font-medium text-ice; letter-spacing: -0.01em; }
 
   .glass {
-    background: rgba(251, 248, 243, 0.72);
+    background: rgba(252, 250, 245, 0.72);
     backdrop-filter: blur(18px) saturate(170%);
     -webkit-backdrop-filter: blur(18px) saturate(170%);
     border: 1px solid rgba(255, 255, 255, 0.65);
@@ -45,8 +45,8 @@
     transition: transform 160ms cubic-bezier(.2,.8,.2,1), background-color 200ms ease, box-shadow 200ms ease, color 200ms ease;
   }
   .btn:active { transform: scale(0.97); transition-duration: 80ms; }
-  .btn-primary { @apply bg-plum text-ivory shadow-lift hover:bg-plum-dark; }
-  .btn-ghost { @apply border border-line bg-white/70 text-ink hover:border-plum/40 hover:bg-white; }
+  .btn-primary { @apply bg-ice text-ivory shadow-lift hover:bg-ice-dark; }
+  .btn-ghost { @apply border border-line bg-white/70 text-ink hover:border-ice/40 hover:bg-white; }
 
   .magnetic-btn { will-change: transform; }
 
@@ -54,8 +54,8 @@
 
   .grid-bg {
     background-image:
-      linear-gradient(rgba(110,47,79,.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(110,47,79,.06) 1px, transparent 1px);
+      linear-gradient(rgba(47,100,133,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(47,100,133,.06) 1px, transparent 1px);
     background-size: 44px 44px;
     mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
   }
@@ -64,7 +64,7 @@
     @apply w-full min-h-[48px] rounded-2xl border border-line bg-ivory px-4 py-3 text-base text-ink placeholder:text-muted/60;
     transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
   }
-  .field:focus { @apply border-plum bg-white outline-none; box-shadow: 0 0 0 4px rgba(110,47,79,.12); }
+  .field:focus { @apply border-ice bg-white outline-none; box-shadow: 0 0 0 4px rgba(47,100,133,.12); }
 }
 
 /* ── Signature: stars falling onto the moon cradle ───────────────── */
@@ -93,12 +93,40 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 
+
+/* ── Hero slideshow ─────────────────────────────────────────────── */
+@keyframes kenburns { from { transform: scale(1.1) translate3d(0, 0, 0); } to { transform: scale(1) translate3d(0, 0, 0); } }
+.kb { animation: kenburns 7.5s cubic-bezier(.2,.6,.3,1) forwards; will-change: transform; }
+@keyframes slide-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.progress-run { animation: slide-progress var(--dur, 6000ms) linear forwards; }
+
+/* ── Scroll reveal for photo tiles ──────────────────────────────── */
+.reveal-tile {
+  opacity: 0;
+  transform: translate3d(0, 56px, 0) scale(.94);
+  filter: blur(8px);
+  transition:
+    opacity 900ms cubic-bezier(.2,.7,.2,1) var(--d, 0ms),
+    transform 1100ms cubic-bezier(.16,.84,.24,1) var(--d, 0ms),
+    filter 900ms ease-out var(--d, 0ms);
+}
+.reveal-tile .reveal-img { transform: scale(1.18); transition: transform 1400ms cubic-bezier(.16,.84,.24,1) var(--d, 0ms); }
+.reveal-tile.is-in { opacity: 1; transform: none; filter: none; }
+.reveal-tile.is-in .reveal-img { transform: scale(1); }
+.reveal-tile.is-in:hover .reveal-img { transform: scale(1.05); transition-duration: 700ms; transition-delay: 0ms; }
+
+/* ── Full-screen service gallery sheet ──────────────────────────── */
+@keyframes sheet-in { from { transform: translate3d(0, 32px, 0); opacity: 0; } to { transform: none; opacity: 1; } }
+.sheet-in { animation: sheet-in 420ms cubic-bezier(.32,.72,0,1); }
+
 @media (prefers-reduced-motion: reduce) {
+  .kb, .progress-run, .sheet-in { animation: none !important; }
+  .reveal-tile, .reveal-tile .reveal-img { opacity: 1 !important; transform: none !important; filter: none !important; }
   html { scroll-behavior: auto; }
   .star-drop, .star-ring, .twinkle, .float-y, .status-dot { animation: none !important; }
   .star-drop { opacity: .9; transform: translateY(var(--fall, 120px)); }
   *, *::before, *::after { transition-duration: 1ms !important; }
 }
 @media (prefers-reduced-transparency: reduce) {
-  .glass { background: #FBF8F3; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .glass { background: #FCFAF5; backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
