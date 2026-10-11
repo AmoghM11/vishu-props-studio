@@ -20,6 +20,9 @@ const PHONES = {
   vijaynagar: { label: '98453 19105', tel: '+919845319105', wa: '919845319105' },
   general: { label: '88809 99105', tel: '+918880999105' },
 }
+// Booking form — paste the Google Form share link here. While empty, the booking card falls back to WhatsApp.
+const GOOGLE_FORM_URL = ''
+
 const INSTAGRAM = 'https://www.instagram.com/vishupropsstudio/'
 const FACEBOOK = 'https://www.facebook.com/p/Vishu-Prop-Studio-61563375611543/'
 const WA_DEFAULT = `https://wa.me/${PHONES.vidyaranyapura.wa}?text=${encodeURIComponent('Hi Vishu Props Studio, I would like to book a photoshoot.')}`
@@ -41,12 +44,6 @@ const THEMES = [
   { id: 65, name: 'Milk & Citrus Bath' },
   { id: 129, name: 'Pretty in Pink' },
   { id: 217, name: 'Peacock Nest' },
-]
-
-const PRICES = [
-  { title: 'Wedding Photography', range: '₹25,000 – ₹30,000', text: 'Full-day coverage. Posed portraits and candid moments, with albums, digital galleries and pre-wedding options.' },
-  { title: 'Engagement Photography', range: '₹12,000 – ₹15,000', text: 'Authentic moments between couples in natural or styled settings, delivered as a curated, edited gallery.' },
-  { title: 'Birthday Photography', range: '₹10,000 – ₹15,000', text: 'From children’s parties to milestone celebrations, indoors or outdoors, with a quick turnaround.' },
 ]
 
 const REVIEWS = [
@@ -953,13 +950,24 @@ function Protocol() {
     const mm = gsap.matchMedia()
     mm.add('(min-width: 1024px)', () => {
       const cards = gsap.utils.toArray('.proto-card', root.current)
+      const STICKY_TOP = 110
       cards.forEach((card, i) => {
         const next = cards[i + 1]
         if (!next) return
-        gsap.to(card, {
-          scale: 0.92, opacity: 0.45, filter: 'blur(6px)', ease: 'none',
-          scrollTrigger: { trigger: next, start: 'top bottom', end: 'top 120px', scrub: true },
+        // Only recede once the next card actually starts to cover this one (its top crosses this card's
+        // pinned bottom edge) — never while the current step is still fully visible and being read.
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: next,
+            start: () => `top ${Math.min(window.innerHeight, STICKY_TOP + card.offsetHeight)}px`,
+            end: `top ${STICKY_TOP}px`,
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
         })
+        tl.to(card, { scale: 0.95, ease: 'none', duration: 1 }, 0)
+          // fade + blur land only in the second half, once the card is mostly covered
+          .fromTo(card, { opacity: 1, filter: 'blur(0px)' }, { opacity: 0.55, filter: 'blur(5px)', ease: 'power1.in', duration: 0.55 }, 0.45)
       })
     })
     return () => mm.revert()
@@ -1003,7 +1011,7 @@ function MoreServices() {
   return (
     <section id="more" className="py-20 sm:py-28">
       <div className="container-x">
-        <SectionHead label="Also at Vishu" title="More ways to" flourish="celebrate." text="Milestone parties, portfolios and the big days — we cover those too." />
+        <SectionHead label="Also at Vishu" title="More ways to" flourish="celebrate." text="Milestone parties, portfolios and the big days — we cover those too. Ask us for packages." />
         <div className="mt-12 grid gap-px overflow-hidden rounded-4xl border border-line bg-line md:grid-cols-3" data-reveal>
           {MORE.map((s) => (
             <article key={s.title} className="group flex flex-col bg-white">
@@ -1017,26 +1025,6 @@ function MoreServices() {
               </div>
             </article>
           ))}
-        </div>
-
-        {/* Event price list (Justdial) */}
-        <div className="mt-16 grid gap-5 lg:grid-cols-[0.8fr_2fr] lg:items-start">
-          <div data-reveal>
-            <p className="label">Event price list</p>
-            <h3 className="mt-3 text-2xl font-bold tracking-tight">Weddings, engagements & birthdays</h3>
-            <p className="mt-3 text-muted">Customisable packages, including albums, digital galleries and pre-wedding shoots. Studio shoot prices are shared on enquiry.</p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {PRICES.map((p) => (
-              <div key={p.title} className="card flex flex-col p-6" data-reveal>
-                <p className="font-display font-semibold">{p.title}</p>
-                <p className="mt-3 font-display text-2xl font-bold tracking-tight text-ice">{p.range}</p>
-                <p className="font-mono text-[0.68rem] uppercase tracking-widest text-muted">per package</p>
-                <p className="mt-4 text-sm leading-relaxed text-muted">{p.text}</p>
-                <a href={`https://wa.me/${PHONES.vidyaranyapura.wa}?text=${encodeURIComponent(`Hi, I'd like details on ${p.title}.`)}`} target="_blank" rel="noreferrer" className="mt-5 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-semibold text-ice hover:underline">Enquire now <ArrowRight className="h-4 w-4" /></a>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </section>
@@ -1343,51 +1331,18 @@ function TrustSignals() {
 /* ─────────────────────────── 11 · Booking form ─────────────────────────── */
 
 function ContactForm() {
-  const [status, setStatus] = useState('idle')
-  const [errors, setErrors] = useState({})
-  const [file, setFile] = useState(null)
-  const [drag, setDrag] = useState(false)
-  const [summary, setSummary] = useState(null)
-  const formRef = useRef(null)
-
-  const validate = (name, value) => {
-    if (name === 'name' && value.trim().length < 2) return 'Please enter your name.'
-    if (name === 'phone' && value.replace(/\D/g, '').length < 10) return 'Enter a 10-digit mobile number so we can call you back.'
-    return ''
-  }
-  // Errors appear on blur but clear while typing — clearing on blur would shift the submit button mid-click
-  const onBlur = (e) => {
-    const msg = validate(e.target.name, e.target.value)
-    if (msg) setErrors((er) => ({ ...er, [e.target.name]: msg }))
-  }
-  const onInput = (e) => {
-    if (errors[e.target.name] && !validate(e.target.name, e.target.value)) setErrors((er) => ({ ...er, [e.target.name]: '' }))
-  }
-
-  const onSubmit = (e) => {
-    e.preventDefault()
-    const fd = new FormData(formRef.current)
-    const next = { name: validate('name', fd.get('name')), phone: validate('phone', fd.get('phone')) }
-    setErrors(next)
-    const first = Object.keys(next).find((k) => next[k])
-    if (first) { formRef.current.elements[first].focus(); return }
-    setStatus('sending')
-    const data = Object.fromEntries(fd.entries())
-    setTimeout(() => { setSummary(data); setStatus('sent') }, 1100)
-  }
-
-  const waLink = summary && (() => {
-    const p = PHONES[summary.studio] || PHONES.vidyaranyapura
-    const msg = `Hi Vishu Props Studio! I'm ${summary.name}. I'd like to book a ${summary.shoot} at the ${summary.studio === 'vijaynagar' ? 'Vijaynagar' : 'Vidyaranyapura'} studio.${summary.date ? ` Preferred date: ${summary.date}.` : ''}${summary.message ? ` ${summary.message}` : ''} My number: ${summary.phone}`
-    return `https://wa.me/${p.wa}?text=${encodeURIComponent(msg)}`
-  })()
-
+  const hasForm = Boolean(GOOGLE_FORM_URL)
+  const steps = [
+    ['Tell us about your shoot', 'Maternity, newborn, toddler, family or studio rental — plus your preferred studio and date.'],
+    ['We call you back', 'Our team confirms availability, themes and packages for your session.'],
+    ['Lock in your slot', 'Reserve your date and get ready for a fully styled shoot day.'],
+  ]
   return (
     <section id="book" className="relative overflow-hidden bg-white py-20 sm:py-28">
       <div aria-hidden="true" className="pointer-events-none absolute -right-40 top-10 h-[480px] w-[480px] rounded-full bg-ice-soft blur-3xl" />
       <div className="container-x relative grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
-          <SectionHead label="Book a shoot" title="Let’s plan your" flourish="session." text="Share a few details and we’ll get back to you with themes, availability and packages. Prefer to talk? Call or WhatsApp either studio." />
+          <SectionHead label="Book a shoot" title="Let’s plan your" flourish="session." text="Fill in our short booking form and we’ll get back to you with themes, availability and packages. Prefer to talk? Call or WhatsApp either studio." />
           <div className="mt-10 space-y-4" data-reveal>
             {[['Vidyaranyapura', PHONES.vidyaranyapura], ['Vijaynagar', PHONES.vijaynagar]].map(([n, p]) => (
               <div key={n} className="flex items-center justify-between gap-4 rounded-3xl border border-line bg-ivory p-5">
@@ -1402,70 +1357,35 @@ function ContactForm() {
           </div>
         </div>
 
-        <div className="card p-6 sm:p-9" data-reveal>
-          {status === 'sent' ? (
-            <div className="flex min-h-[460px] flex-col items-center justify-center text-center" role="status" aria-live="polite">
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-[#228b54] text-white"><Check className="h-8 w-8" /></span>
-              <h3 className="mt-6 text-2xl font-bold tracking-tight">Thank you, {summary.name.split(' ')[0]}!</h3>
-              <p className="mt-3 max-w-sm text-muted">Your request is ready. Send it on WhatsApp so the studio can confirm your slot right away.</p>
-              <a href={waLink} target="_blank" rel="noreferrer" className="btn btn-primary mt-8"><WhatsAppIcon className="h-5 w-5" /> Send on WhatsApp</a>
-              <button type="button" onClick={() => { setStatus('idle'); setSummary(null); setFile(null) }} className="mt-4 min-h-[44px] text-sm font-medium text-muted hover:text-ice">Start a new request</button>
-            </div>
-          ) : (
-            <form ref={formRef} onSubmit={onSubmit} noValidate className="grid gap-5 sm:grid-cols-2">
-              <div>
-                <label htmlFor="name" className="mb-2 block text-sm font-semibold">Your name <span className="text-ice">*</span></label>
-                <input id="name" name="name" autoComplete="name" className="field" onBlur={onBlur} onInput={onInput} aria-invalid={!!errors.name} aria-describedby={errors.name ? 'name-err' : undefined} />
-                {errors.name && <p id="name-err" role="alert" className="mt-1.5 text-sm text-[#b42318]">{errors.name}</p>}
-              </div>
-              <div>
-                <label htmlFor="phone" className="mb-2 block text-sm font-semibold">Mobile number <span className="text-ice">*</span></label>
-                <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" className="field" onBlur={onBlur} onInput={onInput} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'phone-err' : undefined} />
-                {errors.phone && <p id="phone-err" role="alert" className="mt-1.5 text-sm text-[#b42318]">{errors.phone}</p>}
-              </div>
-              <div>
-                <label htmlFor="shoot" className="mb-2 block text-sm font-semibold">Type of shoot</label>
-                <select id="shoot" name="shoot" className="field">
-                  {['Maternity shoot', 'Newborn shoot', 'Baby / toddler shoot', 'Pre-birthday / cake smash', 'Family portraits', 'Model shoot', 'Studio & props rental', 'Event coverage'].map((o) => <option key={o}>{o}</option>)}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="studio" className="mb-2 block text-sm font-semibold">Preferred studio</label>
-                <select id="studio" name="studio" className="field">
-                  <option value="vidyaranyapura">Vidyaranyapura</option>
-                  <option value="vijaynagar">Vijaynagar</option>
-                </select>
-              </div>
-              <div className="sm:col-span-2">
-                <label htmlFor="date" className="mb-2 block text-sm font-semibold">Preferred date</label>
-                <input id="date" name="date" type="date" className="field" />
-                <p className="mt-1.5 text-xs text-muted">For newborn shoots, the first two weeks after birth are ideal — tell us your due date in the message.</p>
-              </div>
-              <div className="sm:col-span-2">
-                <label htmlFor="message" className="mb-2 block text-sm font-semibold">Anything else?</label>
-                <textarea id="message" name="message" rows="3" className="field resize-none" placeholder="Themes you love, baby’s age, number of people…" />
-              </div>
-              <div className="sm:col-span-2">
-                <span className="mb-2 block text-sm font-semibold">Inspiration photo <span className="font-normal text-muted">(optional)</span></span>
-                <label
-                  onDragOver={(e) => { e.preventDefault(); setDrag(true) }}
-                  onDragLeave={() => setDrag(false)}
-                  onDrop={(e) => { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files?.[0]; if (f) setFile(f) }}
-                  className={`flex min-h-[88px] cursor-pointer items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-4 text-sm transition-colors ${drag ? 'border-ice bg-ice-soft' : 'border-line bg-ivory hover:border-ice/40'}`}
-                >
-                  <input type="file" accept="image/*" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-                  <Upload className="h-5 w-5 text-ice" />
-                  <span className="text-muted">{file ? <b className="text-ink">{file.name}</b> : <>Drag a reference photo here or <u className="text-ice">browse</u></>}</span>
-                </label>
-              </div>
-              <div className="sm:col-span-2">
-                <button type="submit" disabled={status === 'sending'} className="btn btn-primary w-full disabled:cursor-wait disabled:opacity-70">
-                  {status === 'sending' ? <><Loader2 className="h-5 w-5 animate-spin" /> Preparing your request…</> : <>Request my slot <ArrowRight className="h-4 w-4" /></>}
-                </button>
-                <p className="mt-3 text-center text-xs text-muted">We only use your number to reply to this request.</p>
-              </div>
-            </form>
-          )}
+        <div className="card relative overflow-hidden p-7 sm:p-10" data-reveal>
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-ice-light/50 blur-2xl" />
+          <span className="relative grid h-14 w-14 place-items-center rounded-2xl bg-ice-light text-ink"><CalendarCheck className="h-6 w-6" /></span>
+          <h3 className="relative mt-6 text-[clamp(1.6rem,3vw,2.2rem)] font-bold leading-tight tracking-[-0.025em]">Booking takes about a minute</h3>
+          <p className="relative mt-3 max-w-md text-muted">Share your details in our booking form — no account needed. We’ll reach out to confirm everything.</p>
+          <ol className="relative mt-8 space-y-5">
+            {steps.map(([t, d], i) => (
+              <li key={t} className="flex gap-4">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-ice-mist bg-ice-soft font-mono text-sm text-ice">{i + 1}</span>
+                <div>
+                  <p className="font-display font-semibold">{t}</p>
+                  <p className="text-[0.95rem] text-muted">{d}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <div className="relative mt-9 flex flex-col gap-3 sm:flex-row">
+            {hasForm ? (
+              <a href={GOOGLE_FORM_URL} target="_blank" rel="noreferrer" className="btn btn-primary">
+                Open booking form <ArrowUpRight className="h-4 w-4" />
+              </a>
+            ) : (
+              <a href={WA_DEFAULT} target="_blank" rel="noreferrer" className="btn btn-primary">
+                <WhatsAppIcon className="h-5 w-5" /> Book on WhatsApp
+              </a>
+            )}
+            <a href={`tel:${PHONES.vidyaranyapura.tel}`} className="btn btn-ghost"><Phone className="h-4 w-4" /> Call {PHONES.vidyaranyapura.label}</a>
+          </div>
+          <p className="relative mt-4 text-xs text-muted">{hasForm ? 'Opens Google Forms in a new tab.' : 'Online booking form coming soon.'}</p>
         </div>
       </div>
     </section>
